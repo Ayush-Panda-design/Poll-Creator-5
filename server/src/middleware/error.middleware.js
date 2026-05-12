@@ -8,6 +8,9 @@ const errorMiddleware = (err, req, res, next) => {
   let statusCode = err.statusCode || 500;
   let message = err.message || 'Internal Server Error';
 
+  // Log error for debugging
+  console.error(`[Error] ${req.method} ${req.url}:`, err);
+
   // Mongoose bad ObjectId
   if (err.name === 'CastError') {
     statusCode = 404;

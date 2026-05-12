@@ -8,6 +8,7 @@ import {
   publishPollService,
   getPublicPollService,
   getPublicResultsService,
+  duplicatePollService,
 } from '../services/poll.service.js';
 import { emitPollPublished } from '../services/socket.service.js';
 
@@ -17,6 +18,7 @@ export const createPoll = asyncHandler(async (req, res) => {
 });
 
 export const getUserPolls = asyncHandler(async (req, res) => {
+  console.log(`[Debug] Fetching polls for user: ${req.user?._id}`);
   const polls = await getUserPollsService(req.user._id);
   res.status(200).json({ success: true, polls });
 });
@@ -40,6 +42,11 @@ export const publishPoll = asyncHandler(async (req, res) => {
   const poll = await publishPollService(req.params.id, req.user._id);
   emitPollPublished(poll._id.toString());
   res.status(200).json({ success: true, poll });
+});
+
+export const duplicatePoll = asyncHandler(async (req, res) => {
+  const poll = await duplicatePollService(req.params.id, req.user._id);
+  res.status(201).json({ success: true, poll });
 });
 
 export const getPublicPoll = asyncHandler(async (req, res) => {

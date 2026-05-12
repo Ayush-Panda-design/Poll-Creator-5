@@ -8,6 +8,7 @@ import {
   publishPoll,
   getPublicPoll,
   getPublicResults,
+  duplicatePoll,
 } from '../controllers/poll.controller.js';
 import { protect } from '../middleware/auth.middleware.js';
 import { createPollValidator, updatePollValidator } from '../validators/poll.validator.js';
@@ -27,5 +28,6 @@ router.get('/:id', getPollById);
 router.patch('/:id', updatePollValidator, validate, updatePoll);
 router.delete('/:id', deletePoll);
 router.post('/:id/publish', publishPoll);
+router.post('/:id/duplicate', duplicatePoll);
 
 export default router;

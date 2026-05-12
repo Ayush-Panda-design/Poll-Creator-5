@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
-import { FiArrowLeft, FiUsers, FiRefreshCw, FiMonitor, FiShare2 } from 'react-icons/fi';
+import { FiArrowLeft, FiUsers, FiRefreshCw, FiMonitor, FiShare2, FiDownload } from 'react-icons/fi';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
@@ -31,6 +31,31 @@ const AnalyticsPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleExportCSV = () => {
+    if (!data || !data.stats) return;
+    
+    const { poll, stats } = data;
+    let csv = "Question,Option,Vote Count,Percentage\n";
+    
+    stats.questionStats.forEach((qs) => {
+      Object.entries(qs.optionCounts || {}).forEach(([opt, count]) => {
+        const pct = qs.optionPercentages?.[opt] ?? 0;
+        csv += `"${qs.questionText}","${opt}",${count},${pct}%\n`;
+      });
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `poll_results_${poll.pollCode}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Data exported as CSV!');
   };
 
   useEffect(() => {
@@ -66,16 +91,23 @@ const AnalyticsPage = () => {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8 flex-wrap">
-        <Link to="/dashboard" className="text-gray-400 hover:text-white p-2 rounded-xl hover:bg-white/5 transition-all"><FiArrowLeft size={20} /></Link>
-        <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-bold text-white truncate">{poll?.title}</h1>
-          <p className="text-gray-400 text-sm mt-0.5">Analytics Dashboard</p>
+      <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 flex-1 min-w-0 w-full">
+          <Link to="/dashboard" className="text-gray-400 hover:text-white p-2 rounded-xl hover:bg-white/5 transition-all flex-shrink-0">
+            <FiArrowLeft size={20} />
+          </Link>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl font-bold text-white truncate">{poll?.title}</h1>
+            <p className="text-gray-400 text-sm mt-0.5">Analytics Dashboard</p>
+          </div>
         </div>
-        <div className="flex gap-3 flex-wrap">
-          <Button icon={<FiRefreshCw />} variant="secondary" onClick={fetchAnalytics}>Refresh</Button>
-          <Link to={`/polls/${id}/present`}><Button icon={<FiMonitor />} variant="secondary">Present</Button></Link>
-          <Button icon={<FiShare2 />} variant="secondary" onClick={async () => { const ok = await copyToClipboard(buildPollUrl(poll.pollCode)); toast.success(ok ? 'Link copied!' : 'Failed'); }}>Share</Button>
+        <div className="flex gap-2 flex-wrap w-full md:w-auto">
+          <Button icon={<FiRefreshCw />} variant="secondary" onClick={fetchAnalytics} className="flex-1 md:flex-none">Refresh</Button>
+          <Button icon={<FiDownload />} variant="secondary" onClick={handleExportCSV} className="flex-1 md:flex-none">Export</Button>
+          <Link to={`/polls/${id}/present`} className="flex-1 md:flex-none">
+            <Button icon={<FiMonitor />} variant="secondary" className="w-full">Present</Button>
+          </Link>
+          <Button icon={<FiShare2 />} variant="secondary" onClick={async () => { const ok = await copyToClipboard(buildPollUrl(poll.pollCode)); toast.success(ok ? 'Link copied!' : 'Failed'); }} className="flex-1 md:flex-none">Share</Button>
         </div>
       </div>
 
@@ -179,3 +211,4 @@ const AnalyticsPage = () => {
 };
 
 export default AnalyticsPage;
+

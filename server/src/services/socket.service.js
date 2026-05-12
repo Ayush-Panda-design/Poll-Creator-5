@@ -7,11 +7,21 @@ import { SOCKET_EVENTS } from '../constants/index.js';
 export const emitNewResponse = (pollId, analytics) => {
   try {
     const io = getIO();
+    console.log(`📡 Emitting updates for poll: ${pollId}`);
+    
+    const updateData = {
+      ...analytics,
+      pollId, // Explicitly include pollId
+    };
+
+    // Emit to both general poll room and dedicated analytics room
     io.to(`poll:${pollId}`).emit(SOCKET_EVENTS.NEW_RESPONSE, {
       pollId,
       totalResponses: analytics.totalResponses,
     });
-    io.to(`poll:${pollId}`).emit(SOCKET_EVENTS.ANALYTICS_UPDATE, analytics);
+    
+    io.to(`poll:${pollId}`).emit(SOCKET_EVENTS.ANALYTICS_UPDATE, updateData);
+    io.to(`analytics:${pollId}`).emit(SOCKET_EVENTS.ANALYTICS_UPDATE, updateData);
   } catch (err) {
     console.error('Socket emit error:', err.message);
   }

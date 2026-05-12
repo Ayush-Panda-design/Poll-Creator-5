@@ -5,9 +5,10 @@ const questionStatSchema = new mongoose.Schema(
     questionIndex: { type: Number },
     questionText: { type: String },
     options: [String],
-    optionCounts: { type: Map, of: Number, default: {} },
-    optionPercentages: { type: Map, of: Number, default: {} },
+    optionCounts: { type: mongoose.Schema.Types.Mixed, default: {} },
+    optionPercentages: { type: mongoose.Schema.Types.Mixed, default: {} },
     totalAnswered: { type: Number, default: 0 },
+
     skipped: { type: Number, default: 0 },
   },
   { _id: false }

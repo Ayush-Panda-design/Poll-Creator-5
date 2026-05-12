@@ -32,6 +32,11 @@ export const publishPoll = createAsyncThunk('polls/publish', async (id, { reject
   catch (err) { return rejectWithValue(err.response?.data?.message || 'Failed to publish poll'); }
 });
 
+export const duplicatePoll = createAsyncThunk('polls/duplicate', async (id, { rejectWithValue }) => {
+  try { const res = await api.post(`/polls/${id}/duplicate`); return res.data; }
+  catch (err) { return rejectWithValue(err.response?.data?.message || 'Failed to duplicate poll'); }
+});
+
 // ── Slice ─────────────────────────────────────────────────────────────────────
 const pollSlice = createSlice({
   name: 'polls',
@@ -81,6 +86,10 @@ const pollSlice = createSlice({
         const idx = state.polls.findIndex((p) => p._id === action.payload.poll._id);
         if (idx !== -1) state.polls[idx] = action.payload.poll;
         state.currentPoll = action.payload.poll;
+      })
+      
+      .addCase(duplicatePoll.fulfilled, (state, action) => {
+        state.polls.unshift(action.payload.poll);
       });
   },
 });
