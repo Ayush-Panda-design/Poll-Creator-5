@@ -28,3 +28,11 @@ export const isPollActive = (poll) => {
   if (poll.expiresAt && new Date() > new Date(poll.expiresAt)) return false;
   return true;
 };
+
+/** Get full image URL */
+export const getImageUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+  const baseUrl = (import.meta.env.VITE_API_URL || '').replace('/api', '');
+  return `${baseUrl}${path}`;
+};

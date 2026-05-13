@@ -5,10 +5,12 @@ import { motion } from 'framer-motion';
 import { FiHome, FiPlus, FiLogOut, FiUser, FiBarChart2, FiMenu, FiX } from 'react-icons/fi';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import ContextualHelp from '../components/ui/ContextualHelp';
 
 const navLinks = [
   { to: '/dashboard',    icon: <FiHome />,     label: 'Dashboard' },
   { to: '/polls/create', icon: <FiPlus />,     label: 'New Poll' },
+  { to: '/profile',      icon: <FiUser />,     label: 'My Profile' },
 ];
 
 const DashboardLayout = () => {
@@ -32,7 +34,7 @@ const DashboardLayout = () => {
         ${open ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:flex
       `}>
         {/* Logo */}
-        <div className="p-6 border-b border-surface-border">
+        <div className="p-6 border-b border-surface-border cursor-pointer" onClick={() => navigate('/dashboard')}>
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">P</div>
             <span className="font-bold text-xl gradient-text">PollWave</span>
@@ -58,15 +60,18 @@ const DashboardLayout = () => {
 
         {/* User Info */}
         <div className="p-4 border-t border-surface-border">
-          <div className="flex items-center gap-3 mb-3 px-2">
-            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-sm font-bold">
+          <button 
+            onClick={() => navigate('/profile')}
+            className="w-full flex items-center gap-3 mb-3 px-2 py-2 rounded-xl hover:bg-white/5 transition-all text-left"
+          >
+            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
               {user?.name?.[0]?.toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-white truncate">{user?.name}</p>
               <p className="text-xs text-gray-500 truncate">{user?.email}</p>
             </div>
-          </div>
+          </button>
           <button onClick={handleLogout} className="w-full flex items-center gap-2 px-4 py-2 rounded-xl text-red-400 hover:bg-red-500/10 transition-all text-sm">
             <FiLogOut /><span>Logout</span>
           </button>
@@ -90,8 +95,12 @@ const DashboardLayout = () => {
           </motion.div>
         </div>
       </main>
+
+      {/* Contextual Help System */}
+      <ContextualHelp />
     </div>
   );
 };
 
 export default DashboardLayout;
+

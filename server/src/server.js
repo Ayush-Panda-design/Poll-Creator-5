@@ -5,7 +5,7 @@ import connectDB from './config/db.js';
 import { initSocket } from './config/socket.js';
 import startExpiryJob from './jobs/expiry.job.js';
 
-const PORT = process.env.PORT || 5008;
+const PORT = process.env.PORT || 5009;
 
 const start = async () => {
   // Connect to MongoDB

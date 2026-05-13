@@ -45,6 +45,28 @@ export const completeOnboarding = createAsyncThunk('auth/onboarding', async (dat
   }
 });
 
+export const updateProfile = createAsyncThunk('auth/updateProfile', async (data, { rejectWithValue }) => {
+  try {
+    const res = await api.patch('/users/profile', data);
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || 'Update failed');
+  }
+});
+
+export const uploadAvatar = createAsyncThunk('auth/uploadAvatar', async (file, { rejectWithValue }) => {
+  try {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    const res = await api.post('/users/profile/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || 'Upload failed');
+  }
+});
+
 // ── Slice ─────────────────────────────────────────────────────────────────────
 const authSlice = createSlice({
   name: 'auth',
@@ -82,7 +104,21 @@ const authSlice = createSlice({
 
       .addCase(completeOnboarding.fulfilled, (state, action) => {
         state.user = action.payload.user;
-      });
+      })
+      
+      .addCase(updateProfile.pending, pending)
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+      })
+      .addCase(updateProfile.rejected, rejected)
+      
+      .addCase(uploadAvatar.pending, pending)
+      .addCase(uploadAvatar.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+      })
+      .addCase(uploadAvatar.rejected, rejected);
   },
 });
 

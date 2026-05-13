@@ -132,8 +132,13 @@ export const duplicatePollService = async (pollId, userId) => {
 };
 
 export const getPublicPollService = async (pollCode) => {
-  const poll = await Poll.findOne({ pollCode }).select('-createdBy');
-  if (!poll) throw new ApiError(404, 'Poll not found');
+  console.log(`[Debug] Searching for public poll with code: "${pollCode}"`);
+  const poll = await Poll.findOne({ pollCode: pollCode.toUpperCase() }).select('-createdBy');
+  
+  if (!poll) {
+    console.warn(`[Debug] Poll NOT found for code: "${pollCode}"`);
+    throw new ApiError(404, 'Poll not found');
+  }
 
   if (poll.isExpired()) {
     poll.status = POLL_STATUS.EXPIRED;

@@ -19,6 +19,9 @@ import PollDetailPage  from '../features/polls/pages/PollDetailPage';
 // Analytics
 import AnalyticsPage from '../features/analytics/pages/AnalyticsPage';
 
+// Profile
+import ProfilePage from '../features/auth/pages/ProfilePage';
+
 // Presentation
 import PresentationPage from '../features/presentation/pages/PresentationPage';
 
@@ -49,6 +52,7 @@ const AppRoutes = () => (
     <Route element={<ProtectedRoute requireOnboarding />}>
       <Route element={<DashboardLayout />}>
         <Route path="/dashboard"              element={<DashboardPage />} />
+        <Route path="/profile"                element={<ProfilePage />} />
         <Route path="/polls/create"           element={<CreatePollPage />} />
         <Route path="/polls/:id/edit"         element={<EditPollPage />} />
         <Route path="/polls/:id"              element={<PollDetailPage />} />
