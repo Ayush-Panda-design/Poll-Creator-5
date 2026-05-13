@@ -32,10 +32,22 @@ export const loginService = async ({ email, password }) => {
   return { token, user: safeUser };
 };
 
+import { OAuth2Client } from 'google-auth-library';
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 /**
- * Finds or creates a user from Google OAuth data.
+ * Verifies Google ID Token and finds/creates user.
  */
-export const googleAuthService = async ({ googleId, email, name, avatar }) => {
+export const googleAuthService = async (idToken) => {
+  const ticket = await client.verifyIdToken({
+    idToken,
+    audience: process.env.GOOGLE_CLIENT_ID,
+  });
+  
+  const payload = ticket.getPayload();
+  const { sub: googleId, email, name, picture: avatar } = payload;
+
   let user = await User.findOne({ $or: [{ googleId }, { email }] });
 
   if (!user) {
@@ -50,6 +62,7 @@ export const googleAuthService = async ({ googleId, email, name, avatar }) => {
   } else if (!user.googleId) {
     user.googleId = googleId;
     user.authProvider = AUTH_PROVIDERS.GOOGLE;
+    if (!user.avatar) user.avatar = avatar;
     await user.save();
   }
 

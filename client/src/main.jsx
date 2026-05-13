@@ -10,31 +10,37 @@ import { ThemeProvider } from './context/ThemeContext';
 import { SocketProvider } from './context/SocketContext';
 import './styles/globals.css';
 
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
-        <ThemeProvider>
-          <AuthProvider>
-            <SocketProvider>
-              <App />
-              <Toaster
-                position="top-right"
-                toastOptions={{
-                  style: {
-                    background: '#1a1a2e',
-                    color: '#f1f5f9',
-                    border: '1px solid #2a2a45',
-                    borderRadius: '12px',
-                  },
-                  success: { iconTheme: { primary: '#6366f1', secondary: '#fff' } },
-                  error:   { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
-                }}
-              />
-            </SocketProvider>
-          </AuthProvider>
-        </ThemeProvider>
-      </BrowserRouter>
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <ThemeProvider>
+            <AuthProvider>
+              <SocketProvider>
+                <App />
+                <Toaster
+                  position="top-right"
+                  toastOptions={{
+                    style: {
+                      background: '#1a1a2e',
+                      color: '#f1f5f9',
+                      border: '1px solid #2a2a45',
+                      borderRadius: '12px',
+                    },
+                    success: { iconTheme: { primary: '#6366f1', secondary: '#fff' } },
+                    error:   { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
+                  }}
+                />
+              </SocketProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </BrowserRouter>
+      </GoogleOAuthProvider>
     </Provider>
   </React.StrictMode>
 );

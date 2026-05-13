@@ -67,6 +67,16 @@ export const uploadAvatar = createAsyncThunk('auth/uploadAvatar', async (file, {
   }
 });
 
+export const googleLogin = createAsyncThunk('auth/googleLogin', async (idToken, { rejectWithValue }) => {
+  try {
+    const res = await api.post('/auth/google', { idToken });
+    localStorage.setItem('token', res.data.token);
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || 'Google login failed');
+  }
+});
+
 // ── Slice ─────────────────────────────────────────────────────────────────────
 const authSlice = createSlice({
   name: 'auth',
@@ -118,7 +128,15 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
       })
-      .addCase(uploadAvatar.rejected, rejected);
+      .addCase(uploadAvatar.rejected, rejected)
+
+      .addCase(googleLogin.pending, pending)
+      .addCase(googleLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+      })
+      .addCase(googleLogin.rejected, rejected);
   },
 });
 

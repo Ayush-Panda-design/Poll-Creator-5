@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { signupUser } from '../authSlice';
+import { signupUser, googleLogin } from '../authSlice';
 import { motion } from 'framer-motion';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { GoogleLogin } from '@react-oauth/google';
 import toast from 'react-hot-toast';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
@@ -29,6 +30,17 @@ const SignupPage = () => {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    const res = await dispatch(googleLogin(credentialResponse.credential));
+    if (googleLogin.fulfilled.match(res)) {
+      toast.success('Signed in with Google!');
+      const user = res.payload.user;
+      navigate(user.onboardingCompleted ? '/dashboard' : '/onboarding');
+    } else {
+      toast.error(res.payload);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-surface flex items-center justify-center p-4 relative overflow-hidden">
       <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-brand-600/20 rounded-full blur-[120px]" />
@@ -45,24 +57,43 @@ const SignupPage = () => {
             <p className="text-gray-400 text-sm mt-1">Start creating polls for free</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input label="Full Name" name="name" type="text" placeholder="Jane Doe" value={form.name} onChange={handleChange} required />
-            <Input label="Email" name="email" type="email" placeholder="you@example.com" value={form.email} onChange={handleChange} required />
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-300">Password</label>
-              <div className="relative">
-                <input
-                  name="password" type={show ? 'text' : 'password'} placeholder="Min. 6 characters"
-                  value={form.password} onChange={handleChange} required
-                  className="input-field pr-11"
-                />
-                <button type="button" onClick={() => setShow(!show)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
-                  {show ? <FiEyeOff /> : <FiEye />}
-                </button>
-              </div>
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-center">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => toast.error('Google Auth Failed')}
+                theme="filled_black"
+                shape="pill"
+                text="signup_with"
+                width="100%"
+              />
             </div>
-            <Button type="submit" loading={loading} className="w-full mt-2">Create Account</Button>
-          </form>
+
+            <div className="relative flex items-center gap-4 my-2">
+              <div className="flex-1 h-px bg-surface-border" />
+              <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Or with email</span>
+              <div className="flex-1 h-px bg-surface-border" />
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <Input label="Full Name" name="name" type="text" placeholder="Jane Doe" value={form.name} onChange={handleChange} required />
+              <Input label="Email" name="email" type="email" placeholder="you@example.com" value={form.email} onChange={handleChange} required />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-gray-300">Password</label>
+                <div className="relative">
+                  <input
+                    name="password" type={show ? 'text' : 'password'} placeholder="Min. 6 characters"
+                    value={form.password} onChange={handleChange} required
+                    className="input-field pr-11"
+                  />
+                  <button type="button" onClick={() => setShow(!show)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+                    {show ? <FiEyeOff /> : <FiEye />}
+                  </button>
+                </div>
+              </div>
+              <Button type="submit" loading={loading} className="w-full mt-2">Create Account</Button>
+            </form>
+          </div>
 
           <p className="text-center text-sm text-gray-400 mt-6">
             Already have an account?{' '}

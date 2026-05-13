@@ -20,8 +20,8 @@ export const login = asyncHandler(async (req, res) => {
 });
 
 export const googleAuth = asyncHandler(async (req, res) => {
-  const { googleId, email, name, avatar } = req.body;
-  const { token, user } = await googleAuthService({ googleId, email, name, avatar });
+  const { idToken } = req.body;
+  const { token, user } = await googleAuthService(idToken);
   sendTokenResponse(res, token, user);
 });
 
