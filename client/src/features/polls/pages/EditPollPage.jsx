@@ -48,90 +48,110 @@ const EditPollPage = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="flex items-center gap-4 mb-8">
-        <button type="button" onClick={() => navigate('/dashboard')} className="text-gray-400 hover:text-white p-2 rounded-xl hover:bg-white/5 transition-all">
-          <FiArrowLeft size={20} />
-        </button>
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold text-white">Edit Poll</h1>
-        </div>
-        <Button type="submit" loading={loading}>Save Changes</Button>
+    <form onSubmit={handleSubmit} className="min-h-screen bg-[#121212] text-white px-6 py-8">
+      {/* BACKGROUND GLOW */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute top-[-120px] left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-[#3b82f6]/10 blur-[140px]" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="flex items-center gap-4 mb-10">
+        <button type="button" onClick={() => navigate('/dashboard')} className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition">
+          <FiArrowLeft />
+        </button>
+        <div className="flex-1">
+          <h1 className="text-2xl font-bold">Edit Poll</h1>
+          <p className="text-gray-400 text-sm">Make changes to your poll</p>
+        </div>
+        <button type="submit" disabled={loading} className="px-5 py-2.5 rounded-xl bg-[#3b82f6] hover:bg-[#2563eb] transition font-semibold disabled:opacity-50">
+          Save Changes
+        </button>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <div className="card space-y-4">
-            <h2 className="font-semibold text-white">Poll Details</h2>
-            <Input label="Title *" value={form.title} onChange={(e) => updateField('title', e.target.value)} required />
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-300">Description</label>
-              <textarea className="input-field resize-none h-20" value={form.description} onChange={(e) => updateField('description', e.target.value)} />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-300">Expiry</label>
-              <input type="datetime-local" className="input-field" value={form.expiresAt} onChange={(e) => updateField('expiresAt', e.target.value)} />
-            </div>
+          <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 space-y-4">
+            <h2 className="font-semibold text-lg">Poll Details</h2>
+            <Input label="Title" value={form.title} onChange={(e) => updateField('title', e.target.value)} required />
+            <textarea placeholder="Description" className="w-full p-3 rounded-xl bg-[#121212] border border-white/10 focus:border-[#3b82f6] outline-none resize-none h-20" value={form.description} onChange={(e) => updateField('description', e.target.value)} />
+            <input type="datetime-local" className="w-full p-3 rounded-xl bg-[#121212] border border-white/10 focus:border-[#3b82f6] outline-none" value={form.expiresAt} onChange={(e) => updateField('expiresAt', e.target.value)} />
           </div>
 
-          {form.questions.map((q, qi) => (
-            <div key={qi} className="card space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-brand-400">Question {qi + 1}</span>
-                <div className="flex gap-2">
-                  <button type="button" onClick={() => updateQ(qi, 'required', !q.required)}
-                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${q.required ? 'border-brand-500/50 bg-brand-600/20 text-brand-400' : 'border-white/10 text-gray-400'}`}>
-                    {q.required ? 'Mandatory' : 'Optional'}
-                  </button>
-                  {form.questions.length > 1 && (
-                    <button type="button" onClick={() => removeQuestion(qi)} className="text-red-400 hover:text-red-300 p-1.5 rounded-lg hover:bg-red-500/10 transition-all">
-                      <FiTrash2 size={16} />
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Questions</h2>
+            {form.questions.map((q, qi) => (
+              <div key={qi} className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-5 space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-[#3b82f6] text-sm font-semibold">Question {qi + 1}</span>
+                  <div className="flex gap-2 items-center">
+                    <button type="button" onClick={() => updateQ(qi, 'required', !q.required)}
+                      className={`text-xs px-3 py-1.5 rounded-full border transition-all ${q.required ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-white' : 'border-white/[0.06] bg-[#1a1a1a] text-[#6b6b6b] hover:text-white'}`}>
+                      {q.required ? 'Mandatory' : 'Optional'}
                     </button>
-                  )}
-                </div>
-              </div>
-              <input className="input-field" value={q.question} onChange={(e) => updateQ(qi, 'question', e.target.value)} placeholder="Question text..." required />
-              <div className="space-y-2">
-                {q.options.map((opt, oi) => (
-                  <div key={oi} className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-full border-2 border-gray-600 flex-shrink-0" />
-                    <input className="input-field flex-1 py-2" value={opt} onChange={(e) => updateOption(qi, oi, e.target.value)} placeholder={`Option ${oi + 1}`} />
-                    {q.options.length > 2 && (
-                      <button type="button" onClick={() => removeOption(qi, oi)} className="text-red-400 p-1.5 rounded hover:bg-red-500/10 transition-all flex-shrink-0"><FiTrash2 size={14} /></button>
+                    {form.questions.length > 1 && (
+                      <button type="button" onClick={() => removeQuestion(qi)} className="text-red-400 hover:text-red-300">
+                        <FiTrash2 />
+                      </button>
                     )}
                   </div>
-                ))}
-                <button type="button" onClick={() => addOption(qi)} className="flex items-center gap-1.5 text-sm text-brand-400 hover:text-brand-300 mt-1 transition-colors">
-                  <FiPlus size={14} /> Add option
-                </button>
+                </div>
+                <input className="w-full p-3 rounded-xl bg-[#121212] border border-white/10 focus:border-[#3b82f6] outline-none" value={q.question} onChange={(e) => updateQ(qi, 'question', e.target.value)} placeholder="Question text..." required />
+                <div className="space-y-2">
+                  {q.options.map((opt, oi) => (
+                    <div key={oi} className="flex items-center gap-2">
+                      <input className="flex-1 p-2 rounded-xl bg-[#121212] border border-white/10 focus:border-[#3b82f6] outline-none" value={opt} onChange={(e) => updateOption(qi, oi, e.target.value)} placeholder={`Option ${oi + 1}`} />
+                      {q.options.length > 2 && (
+                        <button type="button" onClick={() => removeOption(qi, oi)} className="text-red-400 p-1.5 rounded transition-all flex-shrink-0"><FiTrash2 size={16} /></button>
+                      )}
+                    </div>
+                  ))}
+                  <button type="button" onClick={() => addOption(qi)} className="text-[#3b82f6] text-sm mt-1 transition-colors">
+                    + Add option
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
 
-          <button type="button" onClick={addQuestion} className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-gray-400 hover:border-brand-500/50 hover:text-brand-400 transition-all flex items-center justify-center gap-2">
-            <FiPlus /> Add Question
-          </button>
+            <button type="button" onClick={addQuestion} className="w-full py-4 border border-dashed border-white/10 rounded-2xl text-gray-400 hover:border-[#3b82f6] hover:text-[#3b82f6] transition-all">
+              + Add Question
+            </button>
+          </div>
         </div>
 
-        <div className="card space-y-5 h-fit sticky top-6">
-          <h2 className="font-semibold text-white">Settings</h2>
-          {[
-            { label: 'Anonymous Responses', desc: 'No login required', key: 'isAnonymous' },
-            { label: 'Require Login',       desc: 'Authenticated users only', key: 'requiresAuth' },
-          ].map(({ label, desc, key }) => (
-            <div key={key} className="flex items-center justify-between py-3 border-b border-surface-border last:border-0">
-              <div><p className="text-sm font-medium text-white">{label}</p><p className="text-xs text-gray-400">{desc}</p></div>
-              <button type="button" onClick={() => updateField(key, !form[key])}
-                className={`relative w-11 h-6 rounded-full transition-all ${form[key] ? 'bg-brand-600' : 'bg-gray-700'}`}>
-                <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${form[key] ? 'left-6' : 'left-1'}`} />
-              </button>
-            </div>
-          ))}
-          <Button type="submit" loading={loading} className="w-full">Save Changes</Button>
+        <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-5 h-fit space-y-4 sticky top-6">
+          <h2 className="font-semibold text-lg">Settings</h2>
+          <Toggle label="Anonymous" desc="Allow anonymous voting" value={form.isAnonymous} onClick={() => updateField('isAnonymous', !form.isAnonymous)} />
+          <Toggle label="Require Login" desc="Authenticated users only" value={form.requiresAuth} onClick={() => updateField('requiresAuth', !form.requiresAuth)} />
+          <button type="submit" disabled={loading} className="w-full px-5 py-2.5 rounded-xl bg-[#3b82f6] hover:bg-[#2563eb] transition font-semibold disabled:opacity-50 mt-4">
+            Save Changes
+          </button>
         </div>
       </div>
     </form>
   );
 };
+
+/* SIMPLE TOGGLE COMPONENT */
+const Toggle = ({ label, desc, value, onClick }) => (
+  <div className="flex justify-between items-center py-3 border-b border-white/10 last:border-0">
+    <div>
+      <p className="text-sm font-medium">{label}</p>
+      <p className="text-xs text-gray-400">{desc}</p>
+    </div>
+
+    <button
+      onClick={onClick}
+      type="button"
+      className={`w-11 h-6 rounded-full transition ${
+        value ? 'bg-[#3b82f6]' : 'bg-gray-700'
+      }`}
+    >
+      <div
+        className={`w-4 h-4 bg-white rounded-full transition ${
+          value ? 'translate-x-6' : 'translate-x-1'
+        } mt-1`}
+      />
+    </button>
+  </div>
+);
 
 export default EditPollPage;

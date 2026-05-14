@@ -7,6 +7,7 @@ const questionSchema = new mongoose.Schema(
   {
     question: { type: String, required: true, trim: true },
     options: { type: [String], required: true, validate: [(arr) => arr.length >= 2, 'At least 2 options required'] },
+    correctOption: { type: Number, default: null }, // Index of the correct option
     required: { type: Boolean, default: true },
   },
   { _id: true }
@@ -17,6 +18,7 @@ const pollSchema = new mongoose.Schema(
     title: { type: String, required: true, trim: true, maxlength: 200 },
     description: { type: String, trim: true, maxlength: 1000 },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    isQuiz: { type: Boolean, default: false }, // If true, it acts as a quiz
     isAnonymous: { type: Boolean, default: true },
     requiresAuth: { type: Boolean, default: false },
     expiresAt: { type: Date, default: null },

@@ -1,6 +1,6 @@
-# 🌍 PollWave Cloud Deployment Guide (Full Stack)
+# 🌍 Votora Cloud Deployment Guide (Full Stack)
 
-This guide provides the complete, step-by-step process to deploy PollWave using **MongoDB Atlas**, **Render**, and **Vercel**.
+This guide provides the complete, step-by-step process to deploy Votora using **MongoDB Atlas**, **Render**, and **Vercel**.
 
 ---
 
@@ -25,7 +25,7 @@ This guide provides the complete, step-by-step process to deploy PollWave using 
     - Click "New +" -> "Web Service".
     - Connect your GitHub repository.
 3.  **Configure Service**:
-    - **Name**: `pollwave-api`
+    - **Name**: `votora-api`
     - **Root Directory**: `server`
     - **Runtime**: `Node`
     - **Build Command**: `npm install`
@@ -58,20 +58,20 @@ This guide provides the complete, step-by-step process to deploy PollWave using 
     Add these under the "Environment Variables" section:
     | Key | Value | Note |
     | :--- | :--- | :--- |
-    | `VITE_API_URL` | `https://pollwave-api.onrender.com/api` | Your Render URL + `/api` |
-    | `VITE_SOCKET_URL` | `https://pollwave-api.onrender.com` | Your Render URL (No slash) |
+    | `VITE_API_URL` | `https://votora-api.onrender.com/api` | Your Render URL + `/api` |
+    | `VITE_SOCKET_URL` | `https://votora-api.onrender.com` | Your Render URL (No slash) |
     | `VITE_GOOGLE_CLIENT_ID` | `your_google_id` | Same as backend |
 
 ---
 
 ## 🔗 4. Final Connection (Crucial)
-Once Vercel gives you your frontend URL (e.g., `https://pollwave.vercel.app`):
+Once Vercel gives you your frontend URL (e.g., `https://votora.vercel.app`):
 1.  **Update Render**: Go to Render dashboard -> Environment -> Update `CLIENT_URL` to your Vercel URL.
 2.  **Update Google Cloud**:
     - Go to [Google Cloud Console](https://console.cloud.google.com).
     - Under **APIs & Services** -> **Credentials**.
     - **Authorized JavaScript Origins**: Add your Vercel URL.
-    - **Authorized Redirect URIs**: Add `https://pollwave-api.onrender.com/api/auth/google/callback`.
+    - **Authorized Redirect URIs**: Add `https://votora-api.onrender.com/api/auth/google/callback`.
 
 ---
 
@@ -154,8 +154,8 @@ If login works locally but fails on Vercel/Render, check these 3 common killers:
 
 ### 1. The CORS / CLIENT_URL Mismatch (Most Common)
 In **Render Environment Variables**, ensure `CLIENT_URL` is exactly your Vercel URL **WITHOUT a trailing slash**.
-- ✅ `https://pollwave.vercel.app`
-- ❌ `https://pollwave.vercel.app/`
+- ✅ `https://votora.vercel.app`
+- ❌ `https://votora.vercel.app/`
 
 ### 2. Cookie Security (SameSite Issue)
 Since your Frontend (Vercel) and Backend (Render) are on **different domains**, the browser treats cookies as "Third-Party". 
@@ -200,4 +200,20 @@ I have added a `client/vercel.json` file. Ensure this file is pushed to GitHub.
 ```
 
 ---
-MIT © 2025 PollWave
+
+## 🛑 Troubleshooting Timezone Discrepancies (+5:30 HR Gap)
+
+If your poll expiry time looks "wrong" (shifted by 5 hours and 30 minutes) in production, this is a **UTC vs Local Time** mismatch.
+
+### The Reason:
+- **Locally**: Your computer and your local MongoDB are likely set to **IST (GMT+5:30)**.
+- **Production**: Render servers and MongoDB Atlas always use **UTC (GMT+0)**.
+- When you pick a time in the browser (e.g., 8:00 PM IST), the server might save it as 8:00 PM UTC, which is actually 1:30 AM IST the next day.
+
+### The Fix (Applied):
+I have updated `CreatePollPage.jsx` to explicitly convert your local time selection into a **UTC ISO String** before sending it to the server. This ensures that:
+1. The backend saves a globally recognized timestamp.
+2. The frontend automatically converts it back to your local time when displaying it.
+
+---
+MIT © 2025 Votora

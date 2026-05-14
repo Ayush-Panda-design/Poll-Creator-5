@@ -9,6 +9,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { SocketProvider } from './context/SocketContext';
 import './styles/globals.css';
+import CenteredToast from './components/ui/CenteredToast';
 
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
@@ -24,18 +25,25 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <SocketProvider>
                 <App />
                 <Toaster
-                  position="top-right"
-                  toastOptions={{
-                    style: {
-                      background: '#1a1a2e',
-                      color: '#f1f5f9',
-                      border: '1px solid #2a2a45',
-                      borderRadius: '12px',
-                    },
-                    success: { iconTheme: { primary: '#6366f1', secondary: '#fff' } },
-                    error:   { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
+                  position="top-center"
+                  containerStyle={{
+                    inset: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
-                />
+                  toastOptions={{
+                    duration: Infinity, 
+                  }}
+                >
+                  {(t) => (
+                    <CenteredToast 
+                      t={t} 
+                      message={t.message} 
+                      type={t.type} 
+                    />
+                  )}
+                </Toaster>
               </SocketProvider>
             </AuthProvider>
           </ThemeProvider>

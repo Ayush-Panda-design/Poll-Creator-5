@@ -8,6 +8,21 @@ export const submitResponseService = async (pollId, answers, userId, ipAddress) 
   const poll = await Poll.findById(pollId);
   if (!poll) throw new ApiError(404, 'Poll not found');
 
+  // Enforce authentication for Quiz Mode
+  if (poll.isQuiz && !userId) {
+    throw new ApiError(401, 'You must be logged in to participate in this quiz.');
+  }
+
+  // Prevent multiple submissions
+  if (userId) {
+    const existingResponse = await Response.findOne({ pollId, respondent: userId });
+    if (existingResponse) throw new ApiError(400, 'You have already responded to this poll.');
+  } else if (ipAddress) {
+    // Optional: Prevent IP-based duplicates for anonymous polls
+    const existingResponse = await Response.findOne({ pollId, ipAddress });
+    if (existingResponse) throw new ApiError(400, 'You have already responded to this poll from this device.');
+  }
+
   // Validate mandatory questions
   const mandatoryQuestions = poll.questions
     .map((q, i) => ({ ...q.toObject(), index: i }))
@@ -45,7 +60,12 @@ export const submitResponseService = async (pollId, answers, userId, ipAddress) 
     { upsert: true, new: true }
   );
 
-  return { response, analytics: stats };
+  const result = { response, analytics: stats };
+  if (poll.isQuiz) {
+    result.quizResults = poll.questions.map((q) => q.correctOption);
+  }
+
+  return result;
 };
 
 export const getResponsesService = async (pollId, userId) => {

@@ -1,23 +1,30 @@
+import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../features/auth/authSlice';
-import { motion } from 'framer-motion';
-import { FiHome, FiPlus, FiLogOut, FiUser, FiBarChart2, FiMenu, FiX } from 'react-icons/fi';
-import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  FiHome,
+  FiPlus,
+  FiUser,
+  FiLogOut,
+  FiMenu,
+  FiX
+} from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import ContextualHelp from '../components/ui/ContextualHelp';
+import Logo from '../components/ui/Logo';
 
 const navLinks = [
-  { to: '/dashboard',    icon: <FiHome />,     label: 'Dashboard' },
-  { to: '/polls/create', icon: <FiPlus />,     label: 'New Poll' },
-  { to: '/profile',      icon: <FiUser />,     label: 'My Profile' },
+  { to: '/dashboard', icon: <FiHome />, label: 'Home' },
+  { to: '/polls/create', icon: <FiPlus />, label: 'Create' },
+  { to: '/profile', icon: <FiUser />, label: 'Profile' },
 ];
 
 const DashboardLayout = () => {
-  const dispatch   = useDispatch();
-  const navigate   = useNavigate();
-  const { user }   = useSelector((s) => s.auth);
-  const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((s) => s.auth);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     await dispatch(logoutUser());
@@ -25,82 +32,123 @@ const DashboardLayout = () => {
     navigate('/login');
   };
 
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
+
   return (
-    <div className="min-h-screen bg-surface flex">
-      {/* Sidebar */}
+    <div className="min-h-screen bg-[#0f0f0f] text-white flex overflow-x-hidden">
+      
+      {/* MOBILE OVERLAY */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeMobileMenu}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* LEFT SIDEBAR */}
       <aside className={`
-        fixed inset-y-0 left-0 z-40 w-64 bg-surface-card border-r border-surface-border
-        flex flex-col transform transition-transform duration-300
-        ${open ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:flex
+        fixed inset-y-0 left-0 z-50 w-64 border-r border-white/5 bg-[#151515] flex flex-col
+        transform transition-transform duration-300 lg:relative lg:translate-x-0
+        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
+
         {/* Logo */}
-        <div className="p-6 border-b border-surface-border cursor-pointer" onClick={() => navigate('/dashboard')}>
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">P</div>
-            <span className="font-bold text-xl gradient-text">PollWave</span>
-          </div>
+        <div className="h-16 flex items-center justify-between px-4">
+          <Logo onClick={() => { navigate('/'); closeMobileMenu(); }} />
+          <button onClick={closeMobileMenu} className="lg:hidden text-gray-500 hover:text-white p-2">
+            <FiX size={20} />
+          </button>
         </div>
 
-        {/* Nav */}
-        <nav className="flex-1 p-4 space-y-1">
+        {/* Navigation */}
+        <nav className="flex-1 flex flex-col gap-2 px-3 mt-6">
           {navLinks.map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
+              onClick={closeMobileMenu}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
-                  isActive ? 'bg-brand-600/20 text-brand-400 border border-brand-500/30' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                `flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-medium transition-all
+                ${
+                  isActive
+                    ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20'
+                    : 'text-gray-500 hover:text-gray-200 hover:bg-[#1a1a1a]'
                 }`
               }
             >
-              {link.icon}<span>{link.label}</span>
+              <span className="text-lg">{link.icon}</span>
+              <span>{link.label}</span>
             </NavLink>
           ))}
         </nav>
 
-        {/* User Info */}
-        <div className="p-4 border-t border-surface-border">
-          <button 
-            onClick={() => navigate('/profile')}
-            className="w-full flex items-center gap-3 mb-3 px-2 py-2 rounded-xl hover:bg-white/5 transition-all text-left"
+        {/* USER SECTION */}
+        <div className="border-t border-white/5 p-4">
+          <div
+            onClick={() => { navigate('/profile'); closeMobileMenu(); }}
+            className="flex items-center gap-3 cursor-pointer hover:opacity-80 p-2 rounded-xl transition-all"
           >
-            <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+            <div className="w-10 h-10 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-sm font-semibold text-orange-400 shrink-0">
               {user?.name?.[0]?.toUpperCase()}
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">{user?.name}</p>
-              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+            <div className="min-w-0">
+              <p className="text-sm truncate text-gray-200 font-bold">{user?.name}</p>
+              <p className="text-[11px] text-gray-600 truncate">{user?.email}</p>
             </div>
-          </button>
-          <button onClick={handleLogout} className="w-full flex items-center gap-2 px-4 py-2 rounded-xl text-red-400 hover:bg-red-500/10 transition-all text-sm">
-            <FiLogOut /><span>Logout</span>
+          </div>
+
+          <button
+            onClick={handleLogout}
+            className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-semibold text-red-400 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 transition-all"
+          >
+            <FiLogOut size={14} />
+            <span>Sign out</span>
           </button>
         </div>
       </aside>
 
-      {/* Mobile overlay */}
-      {open && <div className="fixed inset-0 bg-black/60 z-30 lg:hidden" onClick={() => setOpen(false)} />}
+      {/* MAIN WORKSPACE */}
+      <main className="flex-1 flex flex-col bg-[#0f0f0f] min-w-0">
 
-      {/* Main content */}
-      <main className="flex-1 flex flex-col min-w-0">
-        {/* Top bar */}
-        <header className="sticky top-0 z-20 bg-surface-card/80 backdrop-blur-md border-b border-surface-border px-6 py-4 flex items-center gap-4 lg:hidden">
-          <button onClick={() => setOpen(true)} className="text-gray-400 hover:text-white"><FiMenu size={22} /></button>
-          <span className="font-bold text-lg gradient-text">PollWave</span>
+        {/* TOP BAR */}
+        <header className="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-[#151515]/60 backdrop-blur sticky top-0 z-30">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="p-2 -ml-2 rounded-lg bg-white/5 border border-white/5 text-gray-400 hover:text-white lg:hidden"
+            >
+              <FiMenu size={20} />
+            </button>
+            <div className="text-[13px] font-bold text-gray-600 uppercase tracking-widest hidden sm:block">
+              Workspace
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+             <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+             <span className="text-[11px] font-bold text-gray-600 uppercase tracking-tighter">Live Status</span>
+          </div>
         </header>
 
-        <div className="flex-1 p-6 lg:p-8">
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+        {/* CONTENT */}
+        <div className="flex-1 overflow-y-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-6 lg:p-10 max-w-7xl mx-auto w-full"
+          >
             <Outlet />
           </motion.div>
         </div>
-      </main>
 
-      {/* Contextual Help System */}
-      <ContextualHelp />
+      </main>
     </div>
   );
 };
 
 export default DashboardLayout;
-

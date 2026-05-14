@@ -54,7 +54,7 @@ export const getPollByIdService = async (pollId, userId) => {
 };
 
 // Fields a poll owner is allowed to change
-const EDITABLE_FIELDS = ['title', 'description', 'isAnonymous', 'requiresAuth', 'expiresAt', 'questions'];
+const EDITABLE_FIELDS = ['title', 'description', 'isAnonymous', 'requiresAuth', 'expiresAt', 'questions', 'isQuiz'];
 
 export const updatePollService = async (pollId, userId, updates) => {
   const poll = await Poll.findById(pollId);
@@ -133,7 +133,8 @@ export const duplicatePollService = async (pollId, userId) => {
 
 export const getPublicPollService = async (pollCode) => {
   console.log(`[Debug] Searching for public poll with code: "${pollCode}"`);
-  const poll = await Poll.findOne({ pollCode: pollCode.toUpperCase() }).select('-createdBy');
+  // Remove correctOption from questions for public fetching
+  const poll = await Poll.findOne({ pollCode: pollCode.toUpperCase() }).select('-createdBy -questions.correctOption');
   
   if (!poll) {
     console.warn(`[Debug] Poll NOT found for code: "${pollCode}"`);

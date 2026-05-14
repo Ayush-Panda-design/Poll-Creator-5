@@ -7,7 +7,7 @@ export const submitResponse = asyncHandler(async (req, res) => {
   const userId = req.user?._id || null;
   const ipAddress = req.ip;
 
-  const { response, analytics } = await submitResponseService(
+  const { response, analytics, quizResults } = await submitResponseService(
     req.params.pollId,
     answers,
     userId,
@@ -17,7 +17,12 @@ export const submitResponse = asyncHandler(async (req, res) => {
   // Emit real-time update
   emitNewResponse(req.params.pollId, analytics);
 
-  res.status(201).json({ success: true, message: 'Response submitted successfully', response });
+  res.status(201).json({
+    success: true,
+    message: 'Response submitted successfully',
+    response,
+    quizResults
+  });
 });
 
 export const getResponses = asyncHandler(async (req, res) => {

@@ -1,9 +1,18 @@
 import { forwardRef } from 'react';
 
 const Input = forwardRef(({ label, error, className = '', ...props }, ref) => (
-  <div className="flex flex-col gap-1.5">
-    {label && <label className="text-sm font-medium text-gray-300">{label}</label>}
-    <input ref={ref} className={`input-field ${error ? 'border-red-500/60 focus:ring-red-500/40' : ''} ${className}`} {...props} />
+  <div className="flex flex-col gap-1.5 w-full">
+    {label && <label className="text-sm font-medium text-[#f5f5f5]">{label}</label>}
+    <input 
+      ref={ref} 
+      className={`
+        w-full bg-[#0a0a0a] border border-white/10 rounded-xl px-4 py-3 text-white
+        placeholder-[#555] focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/10 transition-all duration-200
+        ${error ? 'border-red-500 focus:border-red-500' : ''} 
+        ${className}
+      `} 
+      {...props} 
+    />
     {error && <p className="text-xs text-red-400">{error}</p>}
   </div>
 ));

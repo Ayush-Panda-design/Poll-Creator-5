@@ -27,8 +27,8 @@ export const HELP_CONTENT = {
     ],
   },
   'default': {
-    title: 'PollWave Help',
-    description: 'Welcome to PollWave! Create and manage interactive polls easily.',
+    title: 'Votora Help',
+    description: 'Welcome to Votora! Create and manage interactive polls easily.',
     items: [
       { title: 'Creating Polls', text: 'Go to the New Poll page to build your first questionnaire.' },
       { title: 'Sharing', text: 'Copy the share link from your dashboard to start collecting responses.' },
@@ -36,3 +36,4 @@ export const HELP_CONTENT = {
     ],
   }
 };
+

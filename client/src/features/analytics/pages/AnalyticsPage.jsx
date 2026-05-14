@@ -18,14 +18,19 @@ import toast from 'react-hot-toast';
 const AnalyticsPage = () => {
   const { id } = useParams();
   const [data, setData]         = useState(null);
+  const [responses, setResponses] = useState([]);
   const [loading, setLoading]   = useState(true);
   const [participants, setParticipants] = useState(0);
 
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
-      const res = await api.get(`/analytics/${id}`);
-      setData(res.data);
+      const [analyticsRes, responsesRes] = await Promise.all([
+        api.get(`/analytics/${id}`),
+        api.get(`/responses/${id}`)
+      ]);
+      setData(analyticsRes.data);
+      setResponses(responsesRes.data.responses);
     } catch (err) {
       toast.error('Failed to load analytics');
     } finally {
@@ -89,7 +94,7 @@ const AnalyticsPage = () => {
   const { poll, stats } = data;
 
   return (
-    <div>
+    <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
         <div className="flex items-center gap-4 flex-1 min-w-0 w-full">
@@ -97,41 +102,49 @@ const AnalyticsPage = () => {
             <FiArrowLeft size={20} />
           </Link>
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-bold text-white truncate">{poll?.title}</h1>
-            <p className="text-gray-400 text-sm mt-0.5">Analytics Dashboard</p>
+            <h1 className="text-2xl font-bold text-[#f5f5f5] truncate">{poll?.title}</h1>
+            <p className="text-[#6b6b6b] text-sm mt-0.5">Analytics Dashboard</p>
           </div>
         </div>
         <div className="flex gap-2 flex-wrap w-full md:w-auto">
-          <Button icon={<FiRefreshCw />} variant="secondary" onClick={fetchAnalytics} className="flex-1 md:flex-none">Refresh</Button>
-          <Button icon={<FiDownload />} variant="secondary" onClick={handleExportCSV} className="flex-1 md:flex-none">Export</Button>
+          <button onClick={fetchAnalytics} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1a1a1a] border border-white/[0.06] text-[#a3a3a3] hover:text-white hover:bg-white/5 transition font-medium text-[13px] flex-1 md:flex-none justify-center">
+            <FiRefreshCw /> Refresh
+          </button>
+          <button onClick={handleExportCSV} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1a1a1a] border border-white/[0.06] text-[#a3a3a3] hover:text-white hover:bg-white/5 transition font-medium text-[13px] flex-1 md:flex-none justify-center">
+            <FiDownload /> Export
+          </button>
           <Link to={`/polls/${id}/present`} className="flex-1 md:flex-none">
-            <Button icon={<FiMonitor />} variant="secondary" className="w-full">Present</Button>
+            <button className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#1a1a1a] border border-white/[0.06] text-[#a3a3a3] hover:text-white hover:bg-white/5 transition font-medium text-[13px]">
+              <FiMonitor /> Present
+            </button>
           </Link>
-          <Button icon={<FiShare2 />} variant="secondary" onClick={async () => { const ok = await copyToClipboard(buildPollUrl(poll.pollCode)); toast.success(ok ? 'Link copied!' : 'Failed'); }} className="flex-1 md:flex-none">Share</Button>
+          <button onClick={async () => { const ok = await copyToClipboard(buildPollUrl(poll.pollCode)); toast.success(ok ? 'Link copied!' : 'Failed'); }} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1a1a1a] border border-white/[0.06] text-[#a3a3a3] hover:text-white hover:bg-white/5 transition font-medium text-[13px] flex-1 md:flex-none justify-center">
+            <FiShare2 /> Share
+          </button>
         </div>
       </div>
 
       {/* Top stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'Total Responses', value: stats?.totalResponses ?? 0,          color: 'text-brand-400', icon: '📊' },
+          { label: 'Total Responses', value: stats?.totalResponses ?? 0,          color: 'text-orange-500', icon: '📊' },
           { label: 'Live Participants', value: participants,                         color: 'text-emerald-400', icon: '🟢' },
-          { label: 'Questions',        value: stats?.questionStats?.length ?? 0,   color: 'text-purple-400', icon: '❓' },
+          { label: 'Questions',        value: stats?.questionStats?.length ?? 0,   color: 'text-orange-400', icon: '❓' },
           { label: 'Poll Code',        value: poll?.pollCode ?? '—',              color: 'text-amber-400', icon: '🔑' },
         ].map((s) => (
-          <motion.div key={s.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass p-5">
-            <p className="text-gray-400 text-sm">{s.icon} {s.label}</p>
-            <p className={`text-3xl font-bold mt-1 ${s.color}`}>{s.value}</p>
+          <motion.div key={s.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="bg-[#151515] border border-white/[0.06] rounded-2xl p-5 shadow-lg">
+            <p className="text-[#6b6b6b] text-sm font-medium">{s.icon} {s.label}</p>
+            <p className={`text-3xl font-black mt-1 ${s.color}`}>{s.value}</p>
           </motion.div>
         ))}
       </div>
 
       {/* Per-question charts */}
       {stats?.questionStats?.length === 0 && (
-        <div className="card text-center py-16 text-gray-400">
-          <p className="text-xl font-semibold mb-2">No responses yet</p>
+        <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-16 text-center text-gray-400">
+          <p className="text-xl font-bold mb-2 text-[#f5f5f5]">No responses yet</p>
           <p className="text-sm">Share the poll link and watch results appear in real-time.</p>
-          <div className="mt-4 text-brand-400 font-mono text-lg">{buildPollUrl(poll?.pollCode)}</div>
+          <div className="mt-4 text-orange-500 font-black text-lg tracking-wider">{buildPollUrl(poll?.pollCode)}</div>
         </div>
       )}
 
@@ -139,13 +152,13 @@ const AnalyticsPage = () => {
         {stats?.questionStats?.map((qs, i) => {
           const chartData = Object.entries(qs.optionCounts || {}).map(([name, value]) => ({ name, value }));
           return (
-            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="card">
+            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-6">
               <div className="flex items-start justify-between mb-6 flex-wrap gap-2">
                 <div>
-                  <p className="text-xs text-brand-400 font-semibold uppercase tracking-wide mb-1">Question {i + 1}</p>
-                  <h3 className="text-lg font-semibold text-white">{qs.questionText}</h3>
+                  <p className="text-xs text-[#6b6b6b] font-semibold uppercase tracking-wide mb-1">Question {i + 1}</p>
+                  <h3 className="text-lg font-semibold text-[#f5f5f5]">{qs.questionText}</h3>
                 </div>
-                <div className="flex items-center gap-4 text-sm text-gray-400">
+                <div className="flex items-center gap-4 text-sm text-[#6b6b6b]">
                   <span className="text-emerald-400 font-medium">{qs.totalAnswered} answered</span>
                   <span>{qs.skipped} skipped</span>
                 </div>
@@ -154,12 +167,12 @@ const AnalyticsPage = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Bar chart */}
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Vote Count</p>
+                  <p className="text-xs text-[#6b6b6b] uppercase tracking-wide mb-3">Vote Count</p>
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                      <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                      <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} allowDecimals={false} />
-                      <Tooltip contentStyle={{ background: '#1a1a2e', border: '1px solid #2a2a45', borderRadius: 10, color: '#fff' }} />
+                      <XAxis dataKey="name" tick={{ fill: '#6b6b6b', fontSize: 12 }} />
+                      <YAxis tick={{ fill: '#6b6b6b', fontSize: 12 }} allowDecimals={false} />
+                      <Tooltip contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, color: '#fff' }} />
                       <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                         {chartData.map((_, ci) => <Cell key={ci} fill={CHART_COLORS[ci % CHART_COLORS.length]} />)}
                       </Bar>
@@ -169,13 +182,13 @@ const AnalyticsPage = () => {
 
                 {/* Pie chart */}
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Distribution</p>
+                  <p className="text-xs text-[#6b6b6b] uppercase tracking-wide mb-3">Distribution</p>
                   <ResponsiveContainer width="100%" height={200}>
                     <PieChart>
                       <Pie data={chartData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
                         {chartData.map((_, ci) => <Cell key={ci} fill={CHART_COLORS[ci % CHART_COLORS.length]} />)}
                       </Pie>
-                      <Tooltip contentStyle={{ background: '#1a1a2e', border: '1px solid #2a2a45', borderRadius: 10, color: '#fff' }} />
+                      <Tooltip contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, color: '#fff' }} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -187,7 +200,7 @@ const AnalyticsPage = () => {
                   const pct = qs.optionPercentages?.[opt] ?? 0;
                   return (
                     <div key={oi} className="flex items-center gap-3">
-                      <span className="text-sm text-gray-300 w-32 truncate">{opt}</span>
+                      <span className="text-sm text-[#f5f5f5] w-32 truncate">{opt}</span>
                       <div className="flex-1 bg-white/5 rounded-full h-2 overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }} animate={{ width: `${pct}%` }}
@@ -196,8 +209,8 @@ const AnalyticsPage = () => {
                           style={{ background: CHART_COLORS[oi % CHART_COLORS.length] }}
                         />
                       </div>
-                      <span className="text-sm font-semibold text-white w-10 text-right">{pct}%</span>
-                      <span className="text-xs text-gray-500 w-8 text-right">{count}</span>
+                      <span className="text-sm font-semibold text-[#f5f5f5] w-10 text-right">{pct}%</span>
+                      <span className="text-xs text-[#6b6b6b] w-8 text-right">{count}</span>
                     </div>
                   );
                 })}
@@ -205,6 +218,48 @@ const AnalyticsPage = () => {
             </motion.div>
           );
         })}
+      </div>
+
+      {/* Respondents Section */}
+      <div className="mt-12 mb-6">
+        <h2 className="text-xl font-bold text-[#f5f5f5] mb-4">Respondents</h2>
+        {responses.length === 0 ? (
+          <p className="text-[#6b6b6b]">No responses yet.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {responses.map((res, idx) => {
+              let score = 0;
+              if (poll?.isQuiz) {
+                res.answers.forEach(ans => {
+                  const q = poll.questions[ans.questionIndex];
+                  if (q && q.correctOption !== null && q.correctOption !== undefined) {
+                    const selectedIdx = q.options.indexOf(ans.selectedOption);
+                    if (selectedIdx === q.correctOption) score++;
+                  }
+                });
+              }
+              return (
+                <div key={idx} className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-orange-500/10 text-orange-500 flex items-center justify-center font-bold">
+                      {res.respondent?.name ? res.respondent.name.charAt(0).toUpperCase() : '?'}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-[#f5f5f5]">{res.respondent?.name || 'Anonymous'}</p>
+                      <p className="text-xs text-[#6b6b6b]">{new Date(res.submittedAt).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  {poll?.isQuiz && (
+                    <div className="text-right">
+                      <p className="text-sm text-[#6b6b6b]">Score</p>
+                      <p className="font-bold text-orange-500">{score} / {poll.questions.length}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
