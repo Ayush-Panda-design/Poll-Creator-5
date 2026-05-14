@@ -6,8 +6,8 @@ const CenteredToast = ({ t, message, type = 'success' }) => {
   const icons = {
     success: <FiCheckCircle className="text-emerald-500" />,
     error: <FiXCircle className="text-red-500" />,
-    loading: <FiInfo className="text-orange-500 animate-spin" />,
-    blank: <FiInfo className="text-orange-500" />,
+    loading: <FiInfo className="text-cyan-500 animate-spin" />,
+    blank: <FiInfo className="text-cyan-500" />,
   };
 
   const handleDismiss = () => toast.dismiss(t.id);
@@ -49,7 +49,7 @@ const CenteredToast = ({ t, message, type = 'success' }) => {
 
         <button
           onClick={handleDismiss}
-          className="w-full py-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-black text-[13px] uppercase tracking-widest transition-all active:scale-[0.98] shadow-[0_8px_20px_rgba(249,115,22,0.3)]"
+          className="w-full py-4 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white font-black text-[13px] uppercase tracking-widest transition-all active:scale-[0.98] shadow-[0_8px_20px_rgba(6,182,212,0.3)]"
         >
           Understood
         </button>

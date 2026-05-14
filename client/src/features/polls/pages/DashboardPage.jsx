@@ -79,7 +79,7 @@ const DashboardPage = () => {
         </div>
 
         <Link to="/polls/create" className="w-full md:w-auto">
-          <button className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-orange-500 text-white hover:bg-orange-600 transition font-bold text-[14px] shadow-lg shadow-orange-500/20">
+          <button className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-cyan-500 text-white hover:bg-cyan-600 transition font-bold text-[14px] shadow-lg shadow-cyan-500/20">
             <FiPlus /> Create Poll
           </button>
         </Link>
@@ -88,12 +88,12 @@ const DashboardPage = () => {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'Total Polls', value: polls.length, color: 'text-orange-400' },
+          { label: 'Total Polls', value: polls.length, color: 'text-cyan-400' },
           { label: 'Active', value: polls.filter((p) => p.status === 'active').length, color: 'text-emerald-400' },
           {
             label: 'Total Responses',
             value: polls.reduce((s, p) => s + (p.totalResponses || 0), 0),
-            color: 'text-orange-500'
+            color: 'text-cyan-500'
           },
           { label: 'Published', value: polls.filter((p) => p.isPublished).length, color: 'text-amber-400' },
         ].map((stat) => (
@@ -124,7 +124,7 @@ const DashboardPage = () => {
               onClick={() => setFilter(f)}
               className={`px-4 py-2.5 rounded-xl text-[13px] font-bold capitalize transition-all border shrink-0 ${
                 filter === f
-                  ? 'bg-orange-500/10 border-orange-500/30 text-orange-400'
+                  ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400'
                   : 'bg-[#1a1a1a] border-white/[0.06] text-[#6b6b6b] hover:text-[#f5f5f5] hover:border-white/[0.15]'
               }`}
             >
@@ -139,11 +139,11 @@ const DashboardPage = () => {
         <SkeletonList count={3} />
       ) : filteredPolls.length === 0 ? (
         <div className="bg-[#1a1a1a] border border-white/[0.06] rounded-2xl text-center py-20 px-6 flex flex-col items-center">
-          <FiZap className="text-4xl text-orange-500 mb-4" />
+          <FiZap className="text-4xl text-cyan-500 mb-4" />
           <h3 className="text-xl font-bold text-[#f5f5f5] mb-2">No polls found</h3>
           <p className="text-[#6b6b6b] mb-6 text-[14px]">Create your first poll to get started</p>
           <Link to="/polls/create" className="w-full sm:w-auto">
-            <button className="w-full px-8 py-3 rounded-xl bg-orange-500 text-white hover:bg-orange-600 transition font-bold text-[14px]">
+            <button className="w-full px-8 py-3 rounded-xl bg-cyan-500 text-white hover:bg-cyan-600 transition font-bold text-[14px]">
               Create Poll
             </button>
           </Link>
@@ -170,7 +170,7 @@ const DashboardPage = () => {
                       <Badge status={poll.status} />
 
                       {poll.isQuiz && (
-                        <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md border bg-orange-500/10 text-orange-400 border-orange-500/20">
+                        <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md border bg-cyan-500/10 text-cyan-400 border-cyan-500/20">
                           Quiz
                         </span>
                       )}

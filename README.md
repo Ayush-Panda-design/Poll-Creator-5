@@ -1,4 +1,4 @@
-# 🌊 PollWave — Real-Time Polling Platform
+# 🌊 Votora — Real-Time Polling Platform
 
 A full-stack, production-grade polling and feedback platform inspired by Mentimeter. Create polls, share them via public links, collect live responses, and view animated analytics — all in real-time via Socket.IO.
 

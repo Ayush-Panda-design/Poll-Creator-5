@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import api from '../../../services/api';
 import { connectSocket } from '../../../socket/socket';
@@ -12,6 +12,7 @@ import Logo from '../../../components/ui/Logo';
 
 const PublicPollPage = () => {
   const { pollCode } = useParams();
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
 
   const [poll, setPoll] = useState(null);
@@ -28,7 +29,12 @@ const PublicPollPage = () => {
     const fetchPoll = async () => {
       try {
         const res = await api.get(`/polls/public/${pollCode}`);
-        setPoll(res.data.poll);
+        const p = res.data.poll;
+        if (p.isPublished) {
+          navigate(`/poll/${pollCode}/results`);
+          return;
+        }
+        setPoll(p);
       } catch (err) {
         if (err.response?.status === 410) setExpired(true);
         else setError(err.response?.data?.message || 'Poll not found');
@@ -144,6 +150,58 @@ const PublicPollPage = () => {
       </div>
     );
 
+  if (submitted) {
+    if (poll.isQuiz && quizResults) {
+      let score = 0;
+      poll.questions.forEach((q, i) => {
+        if (answers[i] === q.options[quizResults[i]]) score++;
+      });
+
+      return (
+        <div className="min-h-screen bg-surface flex items-center justify-center p-6">
+          <div className="card text-center max-w-md w-full">
+            <div className="text-5xl mb-6">🏆</div>
+            <h2 className="text-3xl font-bold text-white mb-2">Quiz Completed!</h2>
+            <p className="text-gray-400 mb-8">You've successfully submitted your responses.</p>
+            
+            <div className="bg-[#0f0f0f] rounded-2xl p-8 border border-white/[0.06] mb-8">
+              <p className="text-sm text-gray-500 uppercase tracking-widest font-bold mb-1">Your Score</p>
+              <h3 className="text-6xl font-black text-cyan-400">
+                {score}<span className="text-2xl text-gray-600 ml-2">/ {poll.questions.length}</span>
+              </h3>
+            </div>
+
+            <div className="flex gap-3">
+              <Link to="/dashboard" className="flex-1">
+                <Button className="w-full bg-[#1a1a1a] hover:bg-white/5 text-white border border-white/10">Go Home</Button>
+              </Link>
+              <Link to={`/poll/${pollCode}/results`} className="flex-1">
+                <Button className="w-full bg-cyan-500 hover:bg-cyan-600 text-white shadow-lg shadow-cyan-500/20">View Results</Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="min-h-screen bg-surface flex items-center justify-center p-6">
+        <div className="card text-center max-w-md w-full">
+          <div className="text-5xl mb-6">✅</div>
+          <h2 className="text-2xl font-bold text-white mb-2">Thank You!</h2>
+          <p className="text-gray-400 mb-8">
+            Your response has been recorded successfully.
+          </p>
+          <Link to={`/poll/${pollCode}/results`}>
+            <Button className="w-full bg-cyan-500 hover:bg-cyan-600 text-white shadow-lg shadow-cyan-500/20">
+              View Poll Results
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-surface relative overflow-hidden">
       <div className="global-bg">
@@ -156,8 +214,8 @@ const PublicPollPage = () => {
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <Logo />
           {participants > 0 && (
-            <span className="text-xs text-emerald-400 flex items-center gap-2">
-              <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+            <span className="text-xs text-cyan-400 flex items-center gap-2">
+              <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
               {participants} viewing
             </span>
           )}
@@ -199,7 +257,7 @@ const PublicPollPage = () => {
                     {q.question}
                   </h3>
                   {q.required && (
-                    <span className="text-xs text-red-400">Required</span>
+                    <span className="text-xs text-red-400 font-bold uppercase tracking-wider">Required</span>
                   )}
                 </div>
 
@@ -210,14 +268,14 @@ const PublicPollPage = () => {
                       onClick={() => handleSelect(qIdx, option)}
                       className={`w-full text-left px-4 py-3 rounded-xl border transition-all flex items-center gap-3 group ${
                         answers[qIdx] === option
-                          ? 'border-orange-500/50 bg-orange-500/10 text-white'
+                          ? 'border-cyan-500/50 bg-cyan-500/10 text-white'
                           : 'border-white/10 text-gray-400 hover:bg-white/5 hover:text-gray-200'
                       }`}
                     >
                       <span
                         className={`w-4 h-4 rounded-full border flex-shrink-0 transition-all ${
                           answers[qIdx] === option
-                            ? 'bg-orange-500 border-orange-500 scale-110 shadow-[0_0_10px_rgba(249,115,22,0.4)]'
+                            ? 'bg-cyan-500 border-cyan-500 scale-110 shadow-[0_0_10px_rgba(6,182,212,0.4)]'
                             : 'border-gray-500'
                         }`}
                       />
@@ -234,7 +292,7 @@ const PublicPollPage = () => {
             <Button
               onClick={handleSubmit}
               loading={submitting}
-              className="w-full"
+              className="w-full bg-cyan-500 hover:bg-cyan-600 text-white shadow-lg shadow-cyan-500/20"
               size="lg"
             >
               Submit Response

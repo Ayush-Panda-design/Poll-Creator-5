@@ -141,7 +141,7 @@ export const getPublicPollService = async (pollCode) => {
     throw new ApiError(404, 'Poll not found');
   }
 
-  if (poll.isExpired()) {
+  if (poll.isExpired() && !poll.isPublished) {
     poll.status = POLL_STATUS.EXPIRED;
     await poll.save();
     throw new ApiError(410, 'This poll has expired');

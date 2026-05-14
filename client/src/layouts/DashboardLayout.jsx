@@ -76,7 +76,7 @@ const DashboardLayout = () => {
                 `flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-medium transition-all
                 ${
                   isActive
-                    ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20'
+                    ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'
                     : 'text-gray-500 hover:text-gray-200 hover:bg-[#1a1a1a]'
                 }`
               }
@@ -93,7 +93,7 @@ const DashboardLayout = () => {
             onClick={() => { navigate('/profile'); closeMobileMenu(); }}
             className="flex items-center gap-3 cursor-pointer hover:opacity-80 p-2 rounded-xl transition-all"
           >
-            <div className="w-10 h-10 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-sm font-semibold text-orange-400 shrink-0">
+            <div className="w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-sm font-semibold text-cyan-400 shrink-0">
               {user?.name?.[0]?.toUpperCase()}
             </div>
             <div className="min-w-0">
@@ -130,7 +130,7 @@ const DashboardLayout = () => {
           </div>
           
           <div className="flex items-center gap-3">
-             <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+             <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
              <span className="text-[11px] font-bold text-gray-600 uppercase tracking-tighter">Live Status</span>
           </div>
         </header>

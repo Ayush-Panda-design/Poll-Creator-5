@@ -49,7 +49,7 @@ const LoginPage = () => {
 
       {/* BACKGROUND (same as landing page) */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-[-180px] left-1/2 -translate-x-1/2 w-[620px] h-[320px] bg-orange-500/[0.05] blur-[180px]" />
+        <div className="absolute top-[-180px] left-1/2 -translate-x-1/2 w-[620px] h-[320px] bg-cyan-500/[0.05] blur-[180px]" />
         <div
           className="absolute inset-0 opacity-[0.01]"
           style={{

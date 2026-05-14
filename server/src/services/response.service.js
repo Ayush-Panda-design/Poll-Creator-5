@@ -12,6 +12,14 @@ export const submitResponseService = async (pollId, answers, userId, ipAddress) 
   if (poll.isQuiz && !userId) {
     throw new ApiError(401, 'You must be logged in to participate in this quiz.');
   }
+  
+  if (poll.isExpired()) {
+    throw new ApiError(410, 'This poll has expired and is no longer accepting responses.');
+  }
+
+  if (poll.isPublished) {
+    throw new ApiError(403, 'This poll has already been published and is no longer accepting new responses.');
+  }
 
   // Prevent multiple submissions
   if (userId) {

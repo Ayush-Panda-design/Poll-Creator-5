@@ -127,9 +127,9 @@ const AnalyticsPage = () => {
       {/* Top stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'Total Responses', value: stats?.totalResponses ?? 0,          color: 'text-orange-500', icon: '📊' },
+          { label: 'Total Responses', value: stats?.totalResponses ?? 0,          color: 'text-cyan-500', icon: '📊' },
           { label: 'Live Participants', value: participants,                         color: 'text-emerald-400', icon: '🟢' },
-          { label: 'Questions',        value: stats?.questionStats?.length ?? 0,   color: 'text-orange-400', icon: '❓' },
+          { label: 'Questions',        value: stats?.questionStats?.length ?? 0,   color: 'text-cyan-400', icon: '❓' },
           { label: 'Poll Code',        value: poll?.pollCode ?? '—',              color: 'text-amber-400', icon: '🔑' },
         ].map((s) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="bg-[#151515] border border-white/[0.06] rounded-2xl p-5 shadow-lg">
@@ -144,7 +144,7 @@ const AnalyticsPage = () => {
         <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-16 text-center text-gray-400">
           <p className="text-xl font-bold mb-2 text-[#f5f5f5]">No responses yet</p>
           <p className="text-sm">Share the poll link and watch results appear in real-time.</p>
-          <div className="mt-4 text-orange-500 font-black text-lg tracking-wider">{buildPollUrl(poll?.pollCode)}</div>
+          <div className="mt-4 text-cyan-500 font-black text-lg tracking-wider">{buildPollUrl(poll?.pollCode)}</div>
         </div>
       )}
 
@@ -241,7 +241,7 @@ const AnalyticsPage = () => {
               return (
                 <div key={idx} className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-orange-500/10 text-orange-500 flex items-center justify-center font-bold">
+                    <div className="w-10 h-10 rounded-full bg-cyan-500/10 text-cyan-500 flex items-center justify-center font-bold">
                       {res.respondent?.name ? res.respondent.name.charAt(0).toUpperCase() : '?'}
                     </div>
                     <div>
@@ -252,7 +252,7 @@ const AnalyticsPage = () => {
                   {poll?.isQuiz && (
                     <div className="text-right">
                       <p className="text-sm text-[#6b6b6b]">Score</p>
-                      <p className="font-bold text-orange-500">{score} / {poll.questions.length}</p>
+                      <p className="font-bold text-cyan-500">{score} / {poll.questions.length}</p>
                     </div>
                   )}
                 </div>
