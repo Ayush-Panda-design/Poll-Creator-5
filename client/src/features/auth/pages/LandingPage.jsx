@@ -17,39 +17,15 @@ import { HiOutlineChartBar } from 'react-icons/hi2';
 import Logo from '../../../components/ui/Logo';
 
 const features = [
-  {
-    icon: <FiZap />,
-    title: 'Realtime Polling',
-    desc: 'Votes update instantly across every connected device.',
-  },
-  {
-    icon: <FiShare2 />,
-    title: 'Easy Sharing',
-    desc: 'Share polls with links, QR codes, or invite rooms.',
-  },
-  {
-    icon: <FiBarChart2 />,
-    title: 'Live Analytics',
-    desc: 'Track audience engagement beautifully in realtime.',
-  },
-  {
-    icon: <FiUsers />,
-    title: 'Anonymous Voting',
-    desc: 'Collect honest feedback without login friction.',
-  },
+  { icon: <FiZap />, title: 'Realtime Polling', desc: 'Votes update instantly across every connected device.' },
+  { icon: <FiShare2 />, title: 'Easy Sharing', desc: 'Share polls with links, QR codes, or invite rooms.' },
+  { icon: <FiBarChart2 />, title: 'Live Analytics', desc: 'Track audience engagement beautifully in realtime.' },
+  { icon: <FiUsers />, title: 'Anonymous Voting', desc: 'Collect honest feedback without login friction.' },
 ];
 
 const testimonials = [
-  {
-    name: 'Alex Johnson',
-    role: 'Startup Founder',
-    text: 'The smoothest realtime polling experience we have ever used.',
-  },
-  {
-    name: 'Sophia Lee',
-    role: 'Community Manager',
-    text: 'Our audience engagement increased massively after using Votora.',
-  },
+  { name: 'Alex Johnson', role: 'Startup Founder', text: 'The smoothest realtime polling experience we have ever used.' },
+  { name: 'Sophia Lee', role: 'Community Manager', text: 'Our audience engagement increased massively after using Votora.' },
 ];
 
 const gallery = [
@@ -73,42 +49,28 @@ const gallery = [
 const LandingPage = () => {
   const navigate = useNavigate();
 
-  // TYPEWRITER
-  const words = [
-    'Feels Instant',
-    'Looks Premium',
-    'Built for Realtime',
-    'Made for Communities',
-  ];
-
+  const words = ['Feels Instant', 'Looks Premium', 'Built for Realtime', 'Made for Communities'];
   const [text, setText] = useState('');
   const [wordIndex, setWordIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const currentWord = words[wordIndex];
-
     const timeout = setTimeout(() => {
       if (!isDeleting) {
         setText(currentWord.substring(0, text.length + 1));
-
-        if (text === currentWord) {
-          setTimeout(() => setIsDeleting(true), 1200);
-        }
+        if (text === currentWord) setTimeout(() => setIsDeleting(true), 1200);
       } else {
         setText(currentWord.substring(0, text.length - 1));
-
         if (text === '') {
           setIsDeleting(false);
           setWordIndex((prev) => (prev + 1) % words.length);
         }
       }
     }, isDeleting ? 40 : 85);
-
     return () => clearTimeout(timeout);
   }, [text, isDeleting, wordIndex]);
 
-  // DYNAMIC POLL
   const [polls, setPolls] = useState([
     { name: 'JavaScript', votes: 78 },
     { name: 'Python', votes: 63 },
@@ -121,451 +83,380 @@ const LandingPage = () => {
       setPolls((prev) =>
         prev.map((poll) => {
           const random = Math.floor(Math.random() * 5);
-
           let updatedVotes = poll.votes + random;
-
           if (updatedVotes > 100) updatedVotes = 40;
-
-          return {
-            ...poll,
-            votes: updatedVotes,
-          };
+          return { ...poll, votes: updatedVotes };
         })
       );
     }, 2000);
-
     return () => clearInterval(interval);
   }, []);
 
-  // NAVBAR SCROLL
   const [scrolled, setScrolled] = useState(false);
-
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
-
     window.addEventListener('scroll', onScroll);
-
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return (
-    <div className="bg-[#121212] text-white overflow-x-hidden">
-      {/* BACKGROUND */}
-      <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-[-180px] left-1/2 -translate-x-1/2 w-[620px] h-[320px] bg-[#3b82f6]/[0.07] blur-[180px]" />
+    <div style={{ background: '#1c1c1c', color: '#eeebe5', overflowX: 'hidden', fontFamily: "'Sora', 'Helvetica Neue', sans-serif" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap');
 
-        <div
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage:
-              'linear-gradient(to right,#ffffff 1px,transparent 1px),linear-gradient(to bottom,#ffffff 1px,transparent 1px)',
-            backgroundSize: '90px 90px',
-          }}
-        />
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        a { text-decoration: none; color: inherit; }
+
+        .display { font-family: 'Playfair Display', Georgia, serif; }
+
+        /* Dot grid bg */
+        .dot-grid {
+          background-image: radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px);
+          background-size: 30px 30px;
+        }
+
+        /* Nav link */
+        .nav-link { font-size: 13px; color: #6e6a64; font-weight: 500; transition: color 0.2s; letter-spacing: 0.01em; }
+        .nav-link:hover { color: #eeebe5; }
+
+        /* Buttons */
+        .btn-dark {
+          background: #eeebe5; color: #111; border: none; cursor: pointer;
+          font-family: 'Sora', sans-serif; font-weight: 600; font-size: 13.5px;
+          letter-spacing: 0.02em; transition: background 0.2s, transform 0.15s;
+          display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-dark:hover { background: #fff; transform: translateY(-1px); }
+
+        .btn-outline {
+          background: transparent; color: #7a7570; cursor: pointer;
+          border: 1px solid #2e2e2e; font-family: 'Sora', sans-serif;
+          font-weight: 500; font-size: 13.5px; letter-spacing: 0.01em;
+          transition: border-color 0.2s, color 0.2s, background 0.2s;
+          display: inline-flex; align-items: center;
+        }
+        .btn-outline:hover { border-color: #4a4540; color: #eeebe5; background: rgba(255,255,255,0.03); }
+
+        /* Cards */
+        .card {
+          background: #242424; border: 1px solid #2c2c2c; border-radius: 18px;
+          transition: border-color 0.25s, transform 0.25s, background 0.25s;
+        }
+        .card:hover { border-color: #383838; background: #272727; transform: translateY(-3px); }
+
+        /* Icon boxes */
+        .icon-box {
+          background: rgba(37,99,235,0.1); border: 1px solid rgba(37,99,235,0.18);
+          color: #5b8ef0; border-radius: 12px;
+          display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Divider */
+        .divider {
+          width: 100%; height: 1px;
+          background: linear-gradient(to right, transparent, #2e2e2e, transparent);
+        }
+
+        /* Label */
+        .label { font-size: 11px; font-weight: 600; letter-spacing: 0.13em; text-transform: uppercase; color: #5b8ef0; }
+
+        /* Gallery */
+        .gallery-wrap { cursor: pointer; }
+        .gallery-img { transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94); }
+        .gallery-wrap:hover .gallery-img { transform: scale(1.05); }
+
+        /* Stars */
+        .star { fill: #f59e0b; color: #f59e0b; }
+
+        /* Animations */
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+        .floating { animation: float 5.5s ease-in-out infinite; }
+
+        @keyframes blink { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+        .cursor-blink { animation: blink 1s ease infinite; }
+
+        @keyframes pulse-dot {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+          60% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+        }
+        .live-dot { animation: pulse-dot 2.2s ease infinite; }
+      `}</style>
+
+      {/* FIXED BG */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+        <div className="dot-grid" style={{ position: 'absolute', inset: 0 }} />
+        <div style={{
+          position: 'absolute', top: -200, left: '35%', width: 750, height: 450,
+          background: 'radial-gradient(ellipse, rgba(37,99,235,0.07) 0%, transparent 70%)', filter: 'blur(70px)',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: '15%', right: '0%', width: 500, height: 500,
+          background: 'radial-gradient(ellipse, rgba(37,99,235,0.045) 0%, transparent 70%)', filter: 'blur(90px)',
+        }} />
       </div>
 
-      {/* NAVBAR */}
-      <header
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
-            ? 'bg-[#121212]/90 backdrop-blur-xl border-b border-[#333333]'
-            : 'bg-transparent'
-          }`}
-      >
-        <div className="max-w-7xl mx-auto px-6 md:px-8 h-[72px] flex items-center justify-between">
-          <div className="flex items-center gap-10">
+      {/* ─── NAVBAR ─── */}
+      <header style={{
+        position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 50, transition: 'all 0.3s',
+        background: scrolled ? 'rgba(28,28,28,0.88)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(20px)' : 'none',
+        borderBottom: scrolled ? '1px solid #262626' : '1px solid transparent',
+      }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', height: 70, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
             <Logo />
-
-            {/* nav */}
-            <nav className="hidden md:flex items-center gap-8">
+            <nav style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
               {['Features', 'Gallery', 'Reviews'].map((item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase()}`}
-                  className="text-[13px] text-[#6b6b6b] hover:text-white transition-colors"
-                >
-                  {item}
-                </a>
+                <a key={item} href={`#${item.toLowerCase()}`} className="nav-link">{item}</a>
               ))}
             </nav>
           </div>
-
-          <div className="flex items-center gap-3">
-            <Link
-              to="/login"
-              className="hidden sm:block text-[13px] text-[#6b6b6b] hover:text-white transition-colors px-3 py-1.5"
-            >
-              Login
-            </Link>
-
-            <Link
-              to="/signup"
-              className="px-4 py-2 rounded-lg bg-[#f5f5f5] text-[#0a0a0a] text-[13px] font-semibold hover:bg-white transition-colors"
-            >
-              Get Started
-            </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Link to="/login" className="nav-link" style={{ padding: '8px 14px' }}>Login</Link>
+            <Link to="/signup" className="btn-dark" style={{ padding: '9px 20px', borderRadius: 10 }}>Get Started</Link>
           </div>
         </div>
       </header>
 
-      {/* HERO */}
-      <section className="relative min-h-screen flex items-center pt-[72px]">
-        <div className="max-w-7xl mx-auto px-6 md:px-8 py-24 w-full">
-          <div className="grid lg:grid-cols-2 gap-24 items-center">
+      {/* ─── HERO ─── */}
+      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', paddingTop: 70, zIndex: 1 }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '72px 32px', width: '100%' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
+
             {/* LEFT */}
-            <motion.div
-              initial={{ opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
-            >
-              {/* badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#333333] bg-[#1a1a1a] text-[12px] text-[#7b7b7b] mb-8 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65 }}>
+              {/* Badge */}
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                padding: '6px 14px', borderRadius: 999,
+                border: '1px solid #2e2e2e', background: 'rgba(255,255,255,0.025)',
+                fontSize: 12, color: '#6e6a64', fontWeight: 500, marginBottom: 36, letterSpacing: '0.025em',
+              }}>
+                <span className="live-dot" style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
                 Modern realtime polling platform
               </div>
 
-              {/* heading */}
-              <h1 className="text-[56px] sm:text-[68px] lg:text-[78px] font-bold leading-[0.92] tracking-[-0.045em] text-[#f5f5f5] mb-8">
+              {/* Headline */}
+              <h1 className="display" style={{ fontSize: 'clamp(52px, 6vw, 82px)', lineHeight: 0.93, letterSpacing: '-0.02em', color: '#eeebe5', marginBottom: 26, fontWeight: 700 }}>
                 Polls That
-                <span className="block bg-gradient-to-r from-[#3b82f6] to-[#06b6d4] bg-clip-text text-transparent min-h-[1.08em]">
-                  {text}
-                  <span className="animate-pulse opacity-50 text-[#3b82f6]">|</span>
+                <span style={{ display: 'block', color: '#5b8ef0', minHeight: '1.08em', fontStyle: 'italic', fontWeight: 400 }}>
+                  {text}<span className="cursor-blink" style={{ color: '#5b8ef0' }}>|</span>
                 </span>
               </h1>
 
-              {/* desc */}
-              <p className="text-[#727272] text-[17px] leading-relaxed max-w-xl mb-10">
-                Votora helps creators, startups, educators, and communities run
-                beautiful live polls with immersive realtime interaction.
+              {/* Desc */}
+              <p style={{ color: '#6e6a64', fontSize: 17, lineHeight: 1.72, maxWidth: 460, marginBottom: 40, fontWeight: 300 }}>
+                Votora helps creators, startups, educators, and communities run beautiful live polls with immersive realtime interaction.
               </p>
 
-              {/* buttons */}
-              <div className="flex items-center gap-3 flex-wrap mb-14">
-                <button
-                  onClick={() => navigate('/signup')}
-                  className="group px-6 py-3 rounded-xl bg-[#f5f5f5] text-[#0a0a0a] text-[14px] font-semibold flex items-center gap-2 hover:bg-white transition-colors"
-                >
-                  Start Free
-
-                  <FiArrowRight className="group-hover:translate-x-0.5 transition-transform text-[13px]" />
+              {/* Buttons */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 56 }}>
+                <button onClick={() => navigate('/signup')} className="btn-dark" style={{ padding: '13px 28px', borderRadius: 12 }}>
+                  Start Free <FiArrowRight style={{ fontSize: 13 }} />
                 </button>
-
-                <Link
-                  to="/login"
-                  className="px-6 py-3 rounded-xl border border-[#333333] bg-[#1a1a1a] hover:bg-[#222] transition-colors text-[14px] text-[#d0d0d0]"
-                >
-                  Sign In
-                </Link>
+                <Link to="/login" className="btn-outline" style={{ padding: '13px 28px', borderRadius: 12 }}>Sign In</Link>
               </div>
 
-              {/* stats */}
-              <div className="flex items-center gap-10 flex-wrap">
-                {[
-                  ['1M+', 'Votes processed'],
-                  ['50K+', 'Live sessions'],
-                  ['99.9%', 'Uptime reliability'],
-                ].map(([val, label]) => (
-                  <div key={label}>
-                    <h3 className="text-[28px] font-bold tracking-[-0.03em] text-[#f5f5f5]">
-                      {val}
-                    </h3>
-
-                    <p className="text-[#555] text-[13px] mt-0.5">{label}</p>
+              {/* Stats */}
+              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                {[['1M+', 'Votes processed'], ['50K+', 'Live sessions'], ['99.9%', 'Uptime reliability']].map(([val, label], i) => (
+                  <div key={label} style={{ paddingRight: i < 2 ? 36 : 0, marginRight: i < 2 ? 36 : 0, borderRight: i < 2 ? '1px solid #2e2e2e' : 'none' }}>
+                    <h3 className="display" style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.03em', color: '#eeebe5' }}>{val}</h3>
+                    <p style={{ color: '#3e3a36', fontSize: 12, marginTop: 3 }}>{label}</p>
                   </div>
                 ))}
               </div>
             </motion.div>
 
-            {/* RIGHT - MOBILE DISPLAY WITH GLASSMORPHISM */}
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              className="relative flex justify-center"
-            >
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 5,
-                  ease: 'easeInOut',
-                }}
-                className="relative w-[320px] rounded-[42px] border-[1.5px] border-[#444444] bg-[#151515] overflow-hidden backdrop-blur-2xl"
-                style={{
-                  boxShadow:
-                    '0 40px 100px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.05)',
-                }}
-              >
-                {/* GLASSMORPHIC BORDER OVERLAY (Top Right Focus) */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.03] blur-3xl rounded-full -translate-y-1/2 translate-x-1/2" />
-                
-                {/* top speaker/notch area */}
-                <div className="flex justify-center pt-4 pb-2 relative z-10">
-                  <div className="w-20 h-[4px] rounded-full bg-[#333333] border border-white/[0.05]" />
-                </div>
+            {/* RIGHT — PHONE */}
+            <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.75, delay: 0.12 }}
+              style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
+              {/* Glow ring */}
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+                <div style={{ width: 360, height: 580, borderRadius: 60, background: 'radial-gradient(circle, rgba(37,99,235,0.11) 0%, transparent 65%)', filter: 'blur(55px)' }} />
+              </div>
 
-                {/* content */}
-                <div className="px-5 pb-8 pt-3 relative z-10">
-                  {/* head */}
-                  <div className="flex items-start justify-between mb-6">
-                    <div>
-                      <p className="text-[10px] text-[#555] uppercase tracking-widest font-medium mb-1">
-                        Live Poll
-                      </p>
+              <div className="floating" style={{ position: 'relative', width: 320 }}>
+                {/* Phone body */}
+                <div style={{
+                  borderRadius: 40, overflow: 'hidden', background: '#232323',
+                  border: '1px solid #313131',
+                  boxShadow: '0 48px 100px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04) inset, 0 1px 0 rgba(255,255,255,0.08) inset',
+                }}>
+                  {/* notch */}
+                  <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 16, paddingBottom: 8 }}>
+                    <div style={{ width: 72, height: 4, borderRadius: 99, background: '#313131' }} />
+                  </div>
 
-                      <h2 className="text-[15px] font-semibold text-[#f5f5f5]">
-                        Favourite Language?
-                      </h2>
+                  {/* Poll UI */}
+                  <div style={{ padding: '10px 20px 28px' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 18 }}>
+                      <div>
+                        <p style={{ fontSize: 10, color: '#4a4540', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600, marginBottom: 4 }}>Live Poll</p>
+                        <h2 style={{ fontSize: 15, fontWeight: 600, color: '#eeebe5' }}>Favourite Language?</h2>
+                      </div>
+                      <div style={{ width: 36, height: 36, borderRadius: 11, background: 'rgba(37,99,235,0.1)', border: '1px solid rgba(37,99,235,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <HiOutlineChartBar style={{ color: '#5b8ef0', fontSize: 15 }} />
+                      </div>
                     </div>
 
-                    <div className="w-9 h-9 rounded-xl bg-white/[0.03] border border-[#444444] backdrop-blur-md flex items-center justify-center shadow-lg">
-                      <HiOutlineChartBar className="text-[#3b82f6] text-[14px]" />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+                      {polls.map((option, i) => {
+                        const isTop = i === 0;
+                        return (
+                          <motion.div key={option.name} layout style={{
+                            borderRadius: 14, padding: '12px 14px',
+                            background: isTop ? 'rgba(37,99,235,0.07)' : 'rgba(255,255,255,0.02)',
+                            border: isTop ? '1px solid rgba(37,99,235,0.2)' : '1px solid #2c2c2c',
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                              <p style={{ fontSize: 12, fontWeight: 600, color: isTop ? '#eeebe5' : '#4e4a46' }}>{option.name}</p>
+                              <p style={{ fontSize: 11, fontWeight: 700, color: isTop ? '#5b8ef0' : '#363230' }}>{option.votes}%</p>
+                            </div>
+                            <div style={{ height: 4, borderRadius: 99, background: 'rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+                              <motion.div animate={{ width: `${option.votes}%` }} transition={{ duration: 0.8 }}
+                                style={{ height: '100%', borderRadius: 99, background: isTop ? 'linear-gradient(90deg,#1a56db,#5b8ef0)' : 'rgba(255,255,255,0.08)' }} />
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Live badge */}
+                    <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px', borderRadius: 12, border: '1px solid #2c2c2c', background: 'rgba(255,255,255,0.015)' }}>
+                      <span className="live-dot" style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
+                      <span style={{ fontSize: 10, color: '#4a4540', fontWeight: 500 }}>Results updating live</span>
                     </div>
                   </div>
-
-                  {/* bars */}
-                  <div className="space-y-3">
-                    {polls.map((option, i) => {
-                      const isTop = i === 0;
-
-                      return (
-                        <motion.div
-                          key={option.name}
-                          layout
-                          className="rounded-xl border border-[#333333] bg-white/[0.02] p-3.5 backdrop-blur-sm"
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <p
-                              className={`text-[12px] font-medium ${isTop
-                                  ? 'text-[#f5f5f5]'
-                                  : 'text-[#6b6b6b]'
-                                }`}
-                            >
-                              {option.name}
-                            </p>
-
-                            <p
-                              className={`text-[11px] font-semibold ${isTop ? 'text-[#3b82f6]' : 'text-[#444]'
-                                }`}
-                            >
-                              {option.votes}%
-                            </p>
-                          </div>
-
-                          <div className="h-[5px] rounded-full bg-[#222] overflow-hidden">
-                            <motion.div
-                              animate={{ width: `${option.votes}%` }}
-                              transition={{ duration: 0.8 }}
-                              className="h-full rounded-full"
-                              style={{
-                                background: isTop
-                                  ? 'linear-gradient(90deg,#2563eb,#3b82f6)'
-                                  : 'rgba(255,255,255,0.08)',
-                              }}
-                            />
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-
-                  {/* live badge with glass look */}
-                  <div className="mt-5 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-[#333333] bg-white/[0.02] backdrop-blur-md">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.4)]" />
-
-                    <span className="text-[10px] text-[#666] font-medium">
-                      Results updating live
-                    </span>
-                  </div>
                 </div>
-              </motion.div>
+
+                {/* Floating chip — right */}
+                <motion.div animate={{ y: [0, -6, 0] }} transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut', delay: 0.4 }}
+                  style={{ position: 'absolute', top: '16%', right: -58, background: '#242424', border: '1px solid #2e2e2e', borderRadius: 14, padding: '10px 15px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+                  <p style={{ fontSize: 10, color: '#4a4540', fontWeight: 600, marginBottom: 3 }}>Live Votes</p>
+                  <p className="display" style={{ fontSize: 20, fontWeight: 700, color: '#eeebe5', letterSpacing: '-0.03em' }}>1,284</p>
+                </motion.div>
+
+                {/* Floating chip — left */}
+                <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut', delay: 1.2 }}
+                  style={{ position: 'absolute', bottom: '18%', left: -64, background: '#242424', border: '1px solid #2e2e2e', borderRadius: 14, padding: '10px 15px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span className="live-dot" style={{ width: 7, height: 7, borderRadius: '50%', background: '#22c55e', display: 'inline-block', flexShrink: 0 }} />
+                  <div>
+                    <p style={{ fontSize: 11, color: '#eeebe5', fontWeight: 600 }}>Session Active</p>
+                    <p style={{ fontSize: 10, color: '#4a4540', marginTop: 2 }}>48 participants</p>
+                  </div>
+                </motion.div>
+              </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* FEATURES */}
-      <section
-        id="features"
-        className="relative max-w-7xl mx-auto px-6 md:px-8 py-28"
-      >
-        <div className="w-full h-px bg-[#333333] mb-24" />
-
-        <div className="text-center mb-16">
-          <h2 className="text-[36px] md:text-[46px] font-bold tracking-[-0.03em] text-[#f5f5f5] mb-4">
+      {/* ─── FEATURES ─── */}
+      <section id="features" style={{ position: 'relative', zIndex: 1, maxWidth: 1200, margin: '0 auto', padding: '0 32px 112px' }}>
+        <div className="divider" style={{ marginBottom: 80 }} />
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+          <p className="label" style={{ marginBottom: 16 }}>Core features</p>
+          <h2 className="display" style={{ fontSize: 'clamp(30px, 4vw, 48px)', fontWeight: 700, letterSpacing: '-0.03em', color: '#eeebe5', marginBottom: 16, lineHeight: 1.05 }}>
             Built for modern live engagement
           </h2>
-
-          <p className="text-[#6b6b6b] max-w-xl mx-auto text-[16px] leading-relaxed">
-            Powerful realtime tools designed for classrooms, creators,
-            communities, and modern events.
+          <p style={{ color: '#6e6a64', maxWidth: 460, margin: '0 auto', fontSize: 16, lineHeight: 1.72, fontWeight: 300 }}>
+            Powerful realtime tools designed for classrooms, creators, communities, and modern events.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-[#333333] rounded-2xl overflow-hidden border border-[#333333]">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
           {features.map((f, i) => (
-            <motion.div
-              key={f.title}
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-              viewport={{ once: true }}
-              className="bg-[#151515] p-7 hover:bg-[#1a1a1a] transition-colors group"
-            >
-              <div className="w-11 h-11 rounded-xl bg-[#1a1a1a] border border-[#333333] flex items-center justify-center text-[#3b82f6] text-[15px] mb-5">
-                {f.icon}
-              </div>
-
-              <h3 className="text-[15px] font-semibold text-[#f5f5f5] mb-2">
-                {f.title}
-              </h3>
-
-              <p className="text-[#555] leading-relaxed text-[13px]">
-                {f.desc}
-              </p>
+            <motion.div key={f.title} initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }} viewport={{ once: true }}
+              className="card" style={{ padding: '26px 22px' }}>
+              <div className="icon-box" style={{ width: 44, height: 44, fontSize: 16, marginBottom: 18 }}>{f.icon}</div>
+              <h3 style={{ fontSize: 14, fontWeight: 600, color: '#eeebe5', marginBottom: 8 }}>{f.title}</h3>
+              <p style={{ color: '#6e6a64', fontSize: 13, lineHeight: 1.65 }}>{f.desc}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* IMAGE SHOWCASE */}
-      <section
-        id="gallery"
-        className="max-w-7xl mx-auto px-6 md:px-8 pb-28"
-      >
-        <div className="flex items-end justify-between mb-14 flex-wrap gap-5">
+      {/* ─── GALLERY ─── */}
+      <section id="gallery" style={{ position: 'relative', zIndex: 1, maxWidth: 1200, margin: '0 auto', padding: '0 32px 112px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 48, flexWrap: 'wrap', gap: 24 }}>
           <div>
-            <p className="text-[#3b82f6] text-[13px] font-medium mb-3 tracking-wide uppercase">
-              Real experiences
-            </p>
-
-            <h2 className="text-[36px] md:text-[48px] font-bold tracking-[-0.04em] leading-none">
-              Polling that feels
-              <br />
-              natural & immersive
+            <p className="label" style={{ marginBottom: 14 }}>Real experiences</p>
+            <h2 className="display" style={{ fontSize: 'clamp(30px, 4vw, 54px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.97, color: '#eeebe5' }}>
+              Polling that feels<br />
+              <em style={{ fontWeight: 400, color: '#5b8ef0' }}>natural & immersive</em>
             </h2>
           </div>
-
-          <p className="max-w-md text-[#666] leading-relaxed text-[15px]">
-            Designed for educators, creators, startups, and communities who
-            want modern audience interaction without complexity.
+          <p style={{ maxWidth: 360, color: '#6e6a64', lineHeight: 1.72, fontSize: 15, fontWeight: 300 }}>
+            Designed for educators, creators, startups, and communities who want modern audience interaction without complexity.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
           {gallery.map((item, i) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-              viewport={{ once: true }}
-              className="group"
-            >
-              <div className="relative overflow-hidden rounded-[28px] border border-[#333333] bg-[#1a1a1a]">
-                <img
-                  src={item.img}
-                  alt={item.title}
-                  className="w-full h-[420px] object-cover group-hover:scale-[1.03] transition-transform duration-700"
-                />
-
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
-
-                <div className="absolute bottom-0 left-0 p-7">
-                  <h3 className="text-[24px] font-semibold tracking-[-0.03em] mb-2">
-                    {item.title}
-                  </h3>
-
-                  <p className="text-[14px] text-[#c8c8c8] leading-relaxed max-w-[280px]">
-                    {item.desc}
-                  </p>
-                </div>
+            <motion.div key={item.title} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }} viewport={{ once: true }}
+              className="gallery-wrap" style={{ position: 'relative', overflow: 'hidden', borderRadius: 24, border: '1px solid #2c2c2c' }}>
+              <img src={item.img} alt={item.title} className="gallery-img" style={{ width: '100%', height: 380, objectFit: 'cover', display: 'block' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0) 55%)' }} />
+              <div style={{ position: 'absolute', bottom: 0, left: 0, padding: '26px 22px' }}>
+                <h3 className="display" style={{ fontSize: 21, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', marginBottom: 6 }}>{item.title}</h3>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, maxWidth: 240 }}>{item.desc}</p>
               </div>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* LOWER SECTION */}
-      <section className="max-w-7xl mx-auto px-6 md:px-8 pb-28">
-        <div className="grid lg:grid-cols-2 gap-10 items-start">
-          {/* left */}
-          <div className="space-y-3">
+      {/* ─── LOWER SECTION ─── */}
+      <section style={{ position: 'relative', zIndex: 1, maxWidth: 1200, margin: '0 auto', padding: '0 32px 112px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28, alignItems: 'start' }}>
+          {/* Feature list */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
-              {
-                icon: <FiShield />,
-                title: 'Secure Infrastructure',
-                desc: 'Protected realtime architecture built for reliability.',
-              },
-              {
-                icon: <FiClock />,
-                title: 'Instant Sync',
-                desc: 'Every interaction updates instantly without refresh.',
-              },
-              {
-                icon: <FiLayers />,
-                title: 'Multiple Poll Types',
-                desc: 'MCQs, ratings, quizzes and audience feedback.',
-              },
-              {
-                icon: <FiCheckCircle />,
-                title: 'Minimal Experience',
-                desc: 'Modern interface focused on clarity and speed.',
-              },
+              { icon: <FiShield />, title: 'Secure Infrastructure', desc: 'Protected realtime architecture built for reliability.' },
+              { icon: <FiClock />, title: 'Instant Sync', desc: 'Every interaction updates instantly without refresh.' },
+              { icon: <FiLayers />, title: 'Multiple Poll Types', desc: 'MCQs, ratings, quizzes and audience feedback.' },
+              { icon: <FiCheckCircle />, title: 'Minimal Experience', desc: 'Modern interface focused on clarity and speed.' },
             ].map((f, i) => (
-              <motion.div
-                key={f.title}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.08 }}
-                viewport={{ once: true }}
-                className="rounded-2xl border border-[#333333] bg-[#151515] p-6 flex gap-4 hover:bg-[#1a1a1a] transition-colors"
-              >
-                <div className="min-w-[42px] h-[42px] rounded-xl bg-[#1a1a1a] border border-[#333333] flex items-center justify-center text-[#3b82f6] text-[14px] mt-0.5">
-                  {f.icon}
-                </div>
-
+              <motion.div key={f.title} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }} viewport={{ once: true }}
+                className="card" style={{ padding: '18px 20px', display: 'flex', gap: 15, cursor: 'default' }}>
+                <div className="icon-box" style={{ minWidth: 40, height: 40, fontSize: 14, marginTop: 2 }}>{f.icon}</div>
                 <div>
-                  <h3 className="text-[14px] font-semibold text-[#f5f5f5] mb-1.5">
-                    {f.title}
-                  </h3>
-
-                  <p className="text-[#555] text-[13px] leading-relaxed">
-                    {f.desc}
-                  </p>
+                  <h3 style={{ fontSize: 14, fontWeight: 600, color: '#eeebe5', marginBottom: 5 }}>{f.title}</h3>
+                  <p style={{ color: '#6e6a64', fontSize: 13, lineHeight: 1.62 }}>{f.desc}</p>
                 </div>
               </motion.div>
             ))}
           </div>
 
-          {/* reviews */}
-          <div id="reviews" className="space-y-3">
+          {/* Reviews */}
+          <div id="reviews" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {testimonials.map((feedback, index) => (
-              <motion.div
-                key={feedback.name}
-                initial={{ opacity: 0, y: 22 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.08 }}
-                viewport={{ once: true }}
-                className="rounded-2xl border border-[#333333] bg-[#151515] p-7"
-              >
-                <div className="flex items-center gap-0.5 text-[#3b82f6] mb-5">
-                  {[...Array(5)].map((_, j) => (
-                    <FiStar key={j} className="text-[11px]" />
-                  ))}
+              <motion.div key={feedback.name} initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.08 }} viewport={{ once: true }}
+                className="card" style={{ padding: '26px 24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginBottom: 16 }}>
+                  {[...Array(5)].map((_, j) => <FiStar key={j} className="star" style={{ fontSize: 12 }} />)}
                 </div>
-
-                <p className="text-[15px] leading-relaxed text-[#b0b0b0] mb-6">
+                <p className="display" style={{ fontSize: 16, lineHeight: 1.72, color: '#8a8480', marginBottom: 22, fontWeight: 400, fontStyle: 'italic' }}>
                   "{feedback.text}"
                 </p>
-
-                <div>
-                  <h4 className="text-[13px] font-semibold text-[#f5f5f5]">
-                    {feedback.name}
-                  </h4>
-
-                  <p className="text-[#555] text-[12px] mt-0.5">
-                    {feedback.role}
-                  </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: '50%',
+                    background: 'linear-gradient(135deg, rgba(37,99,235,0.28), rgba(37,99,235,0.08))',
+                    border: '1px solid rgba(37,99,235,0.22)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 14, fontWeight: 700, color: '#5b8ef0',
+                  }}>
+                    {feedback.name[0]}
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: 13, fontWeight: 600, color: '#eeebe5' }}>{feedback.name}</h4>
+                    <p style={{ color: '#3e3a36', fontSize: 12, marginTop: 2 }}>{feedback.role}</p>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -573,57 +464,48 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="max-w-6xl mx-auto px-6 md:px-8 pb-28">
-        <div className="relative rounded-[32px] border border-[#333333] bg-[#151515] px-10 py-20 overflow-hidden text-center">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-44 h-px bg-gradient-to-r from-transparent via-[#3b82f6]/40 to-transparent" />
+      {/* ─── CTA ─── */}
+      <section style={{ position: 'relative', zIndex: 1, maxWidth: 1100, margin: '0 auto', padding: '0 32px 112px' }}>
+        <div style={{ position: 'relative', borderRadius: 32, border: '1px solid #2e2e2e', background: '#212121', padding: '80px 40px', overflow: 'hidden', textAlign: 'center' }}>
+          {/* Dot grid overlay */}
+          <div className="dot-grid" style={{ position: 'absolute', inset: 0, opacity: 0.7 }} />
+          {/* Accent top line */}
+          <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 220, height: 1, background: 'linear-gradient(to right, transparent, #5b8ef0, transparent)' }} />
+          {/* Glow */}
+          <div style={{ position: 'absolute', top: -80, left: '50%', transform: 'translateX(-50%)', width: 560, height: 280, background: 'radial-gradient(circle, rgba(37,99,235,0.09) 0%, transparent 70%)', filter: 'blur(40px)' }} />
 
-          <h2 className="text-[38px] md:text-[52px] font-bold tracking-[-0.04em] text-[#f5f5f5] mb-5">
-            Start your first live poll today
-          </h2>
-
-          <p className="text-[#6b6b6b] max-w-xl mx-auto mb-10 text-[16px] leading-relaxed">
-            Create immersive realtime polls for your audience, classroom,
-            startup, or community in minutes.
-          </p>
-
-          <button
-            onClick={() => navigate('/signup')}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#f5f5f5] text-[#0a0a0a] text-[14px] font-semibold hover:bg-white transition-colors group"
-          >
-            Create Poll
-
-            <FiArrowRight className="group-hover:translate-x-0.5 transition-transform text-[13px]" />
-          </button>
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            <p className="label" style={{ marginBottom: 20 }}>Get started today</p>
+            <h2 className="display" style={{ fontSize: 'clamp(32px, 5vw, 58px)', fontWeight: 700, letterSpacing: '-0.04em', color: '#eeebe5', marginBottom: 20, lineHeight: 1.02 }}>
+              Start your first live<br />poll today
+            </h2>
+            <p style={{ color: '#6e6a64', maxWidth: 440, margin: '0 auto 40px', fontSize: 16, lineHeight: 1.72, fontWeight: 300 }}>
+              Create immersive realtime polls for your audience, classroom, startup, or community in minutes.
+            </p>
+            <button onClick={() => navigate('/signup')} className="btn-dark" style={{ padding: '14px 34px', borderRadius: 12 }}>
+              Create Poll <FiArrowRight style={{ fontSize: 13 }} />
+            </button>
+          </div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="border-t border-[#333333]">
-        <div className="max-w-6xl mx-auto px-6 py-7 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="relative w-5 h-5 rounded-md bg-[#1a1a1a] border border-[#333333] flex items-center justify-center">
-              <span className="text-[9px] font-black text-[#f5f5f5]">V</span>
-
-              <div className="absolute bottom-0.5 right-0.5 w-1 h-1 rounded-full bg-gradient-to-br from-[#3b82f6] to-[#06b6d4]" />
+      {/* ─── FOOTER ─── */}
+      <footer style={{ borderTop: '1px solid #262626', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ position: 'relative', width: 22, height: 22, borderRadius: 7, background: '#2a2a2a', border: '1px solid #333', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: 9, fontWeight: 900, color: '#eeebe5' }}>V</span>
+              <div style={{ position: 'absolute', bottom: 3, right: 3, width: 5, height: 5, borderRadius: '50%', background: '#5b8ef0' }} />
             </div>
-
-            <span className="text-[13px] text-[#444]">Votora</span>
+            <span style={{ fontSize: 13, color: '#3e3a36', fontWeight: 500 }}>Votora</span>
           </div>
-
-          <p className="text-[12px] text-[#3a3a3a]">
-            © 2026 Votora. Built for modern realtime engagement.
-          </p>
-
-          <nav className="flex items-center gap-5">
+          <p style={{ fontSize: 12, color: '#303030' }}>© 2026 Votora. Built for modern realtime engagement.</p>
+          <nav style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
             {['Privacy', 'Terms', 'Status'].map((l) => (
-              <a
-                key={l}
-                href="#"
-                className="text-[12px] text-[#444] hover:text-[#8b8b8b] transition-colors"
-              >
-                {l}
-              </a>
+              <a key={l} href="#" style={{ fontSize: 12, color: '#3e3a36', transition: 'color 0.2s' }}
+                onMouseEnter={(e) => (e.target.style.color = '#6e6a64')}
+                onMouseLeave={(e) => (e.target.style.color = '#3e3a36')}
+              >{l}</a>
             ))}
           </nav>
         </div>
