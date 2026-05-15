@@ -213,6 +213,30 @@ const PublicPollPage = () => {
         </div>
       </div>
     );
+  
+  if (!loading && poll && poll.timeLimitSystem === 'timer' && !activeTimerEnd)
+    return (
+      <div className="min-h-screen bg-surface flex items-center justify-center p-6">
+        <div className="card text-center max-w-md w-full relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-indigo-500 animate-pulse" />
+          <div className="text-4xl mb-4">⏳</div>
+          <h2 className="text-xl font-semibold text-white mb-2">
+            Waiting for Host
+          </h2>
+          <p className="text-gray-400 mb-6">
+            The poll creator has not started the timer yet. This page will update automatically once the session begins.
+          </p>
+          <div className="flex items-center justify-center gap-3">
+             <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" />
+             <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce delay-75" />
+             <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce delay-150" />
+          </div>
+          {participants > 0 && (
+             <p className="mt-6 text-xs text-gray-500">{participants} people are waiting...</p>
+          )}
+        </div>
+      </div>
+    );
 
   if (expired)
     return (

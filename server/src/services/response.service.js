@@ -13,8 +13,17 @@ export const submitResponseService = async (pollId, answers, userId, ipAddress, 
     throw new ApiError(401, 'You must be logged in to participate in this quiz.');
   }
   
-  if (poll.isExpired()) {
+  if (poll.timeLimitSystem === 'expiry' && poll.expiresAt && new Date() > new Date(poll.expiresAt)) {
     throw new ApiError(410, 'This poll has expired and is no longer accepting responses.');
+  }
+
+  if (poll.timeLimitSystem === 'timer') {
+    if (!poll.timerEndTime) {
+      throw new ApiError(403, 'This poll has not started yet. Please wait for the creator to start the timer.');
+    }
+    if (new Date() > new Date(poll.timerEndTime)) {
+      throw new ApiError(410, 'The timer for this poll has ended. No further responses are accepted.');
+    }
   }
 
   if (poll.isPublished) {
