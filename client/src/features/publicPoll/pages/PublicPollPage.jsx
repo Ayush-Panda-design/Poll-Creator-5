@@ -207,7 +207,7 @@ const PublicPollPage = () => {
           <p className="text-gray-400 mb-6">
             You must be signed in to participate in this quiz.
           </p>
-          <Link to="/login">
+          <Link to={`/login?redirect=/poll/${pollCode}`}>
             <Button className="w-full">Sign In</Button>
           </Link>
         </div>

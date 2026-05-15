@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { signupUser, googleLogin } from '../authSlice';
 import { motion } from 'framer-motion';
@@ -12,7 +12,11 @@ import Logo from '../../../components/ui/Logo';
 const SignupPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { loading } = useSelector((s) => s.auth);
+
+  const searchParams = new URLSearchParams(location.search);
+  const redirect = searchParams.get('redirect');
 
   const [form, setForm] = useState({
     name: '',
@@ -37,7 +41,8 @@ const SignupPage = () => {
 
     if (signupUser.fulfilled.match(res)) {
       toast.success('Account created!');
-      navigate('/onboarding');
+      const target = redirect || '/onboarding';
+      navigate(target);
     } else {
       toast.error(res.payload);
     }
@@ -51,7 +56,8 @@ const SignupPage = () => {
     if (googleLogin.fulfilled.match(res)) {
       toast.success('Signed in with Google!');
       const user = res.payload.user;
-      navigate(user.onboardingCompleted ? '/dashboard' : '/onboarding');
+      const target = redirect || (user.onboardingCompleted ? '/dashboard' : '/onboarding');
+      navigate(target);
     } else {
       toast.error(res.payload);
     }
@@ -197,7 +203,7 @@ const SignupPage = () => {
           <p className="text-center text-[13px] text-[#6b6b6b] mt-6">
             Already have an account?{' '}
             <Link
-              to="/login"
+              to={`/login${redirect ? `?redirect=${redirect}` : ''}`}
               className="text-[#3b82f6] hover:text-[#60a5fa] font-medium"
             >
               Sign in

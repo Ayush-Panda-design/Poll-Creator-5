@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser, googleLogin } from '../authSlice';
 import { motion } from 'framer-motion';
@@ -11,7 +11,11 @@ import Logo from '../../../components/ui/Logo';
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { loading } = useSelector((s) => s.auth);
+
+  const searchParams = new URLSearchParams(location.search);
+  const redirect = searchParams.get('redirect');
 
   const [form, setForm] = useState({ email: '', password: '' });
   const [show, setShow] = useState(false);
@@ -26,7 +30,8 @@ const LoginPage = () => {
     if (loginUser.fulfilled.match(res)) {
       toast.success('Welcome back!');
       const user = res.payload.user;
-      navigate(user.onboardingCompleted ? '/dashboard' : '/onboarding');
+      const target = redirect || (user.onboardingCompleted ? '/dashboard' : '/onboarding');
+      navigate(target);
     } else {
       toast.error(res.payload);
     }
@@ -38,7 +43,8 @@ const LoginPage = () => {
     if (googleLogin.fulfilled.match(res)) {
       toast.success('Logged in with Google!');
       const user = res.payload.user;
-      navigate(user.onboardingCompleted ? '/dashboard' : '/onboarding');
+      const target = redirect || (user.onboardingCompleted ? '/dashboard' : '/onboarding');
+      navigate(target);
     } else {
       toast.error(res.payload);
     }
@@ -167,7 +173,7 @@ const LoginPage = () => {
           <p className="text-center text-[13px] text-[#6b6b6b] mt-6">
             Don’t have an account?{' '}
             <Link
-              to="/signup"
+              to={`/signup${redirect ? `?redirect=${redirect}` : ''}`}
               className="text-[#3b82f6] hover:text-[#60a5fa] font-medium"
             >
               Sign up
