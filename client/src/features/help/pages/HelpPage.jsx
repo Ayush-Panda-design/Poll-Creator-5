@@ -25,59 +25,74 @@ const HelpPage = () => {
       title: 'How to Make a Poll',
       icon: <FiPlusCircle />,
       color: 'text-cyan-400',
-      description: 'Creating a poll is quick and easy. Just follow these 3 steps:',
+      description: 'Creating a poll is quick and easy. Just follow these steps:',
       details: [
-        'Step 1: Give your poll a name and a short description.',
+        'Step 1: Give your poll a clear name and a short description.',
         'Step 2: Add your questions. You can make them mandatory so nobody skips them.',
-        'Step 3: Choose if you want the results to be private or public.',
+        'Step 3: Choose your Time System (see "Controlling Time" below).',
+        'Step 4: Decide if you want it to be a Quiz or a simple opinion poll.',
+      ]
+    },
+    {
+      id: 'timing',
+      title: 'Controlling the Time',
+      icon: <FiClock />,
+      color: 'text-purple-400',
+      description: 'You have total control over when your poll starts and ends.',
+      details: [
+        'Auto-Close: Pick a fixed date and time for the poll to shut down by itself.',
+        'Manual Timer: Set a duration (e.g. 5 minutes). You start it manually when you are ready.',
+        'Live Clock: Everyone sees the same red timer ticking down at the top of their screen.',
+        'Auto-Save: If time runs out while someone is typing, their progress is sent automatically.',
+      ]
+    },
+    {
+      id: 'management',
+      title: 'Manage Your Polls',
+      icon: <FiLayers />,
+      color: 'text-indigo-400',
+      description: 'Your dashboard is your control center for everything.',
+      details: [
+        'Search & Filter: Find any poll by its name or status (Active, Finished, Published).',
+        'Clone Tool: Like a poll you made? Click "Clone" to make an exact copy instantly.',
+        'Editing: Fix typos or change settings on your drafts before you share them.',
+        'Publishing: Results are private by default. Toggle "Publish" to let others see the final charts.',
       ]
     },
     {
       id: 'quiz',
-      title: 'How Quizzes Work',
+      title: 'Running a Quiz',
       icon: <FiAward />,
       color: 'text-amber-400',
-      description: 'Turn your poll into a fun test with right and wrong answers.',
+      description: 'Turn your questions into a test with scores and right answers.',
       details: [
-        'Pick the "Right Answer" for each question while creating.',
-        '🔑 Important: To keep things fair, everyone must Log In to take a quiz.',
-        'People will see their score immediately after they finish.',
-      ]
-    },
-    {
-      id: 'voting',
-      title: 'How to Vote',
-      icon: <FiUserCheck />,
-      color: 'text-emerald-400',
-      description: 'Answering is simple for your audience.',
-      details: [
-        'Just click on the option you like best.',
-        'Your choice is saved as you go. Click "Submit" at the end.',
-        'The app will tell you if you missed any important questions.',
-      ]
-    },
-    {
-      id: 'analytics',
-      title: 'Viewing Results',
-      icon: <FiTrendingUp />,
-      color: 'text-indigo-400',
-      description: 'See what everyone is thinking in real-time.',
-      details: [
-        'Charts update instantly as soon as someone votes.',
-        'Live Counter: See how many people are looking at the poll right now.',
-        'Download for Excel: Save all responses to your computer with one click.',
+        'Pick the "Correct Answer" for each question during creation.',
+        'Scorecard: Respondents see their score (e.g. 8/10) right after they finish.',
+        'Identity: Quizzes require people to sign in so we can track their scores correctly.',
       ]
     },
     {
       id: 'anticheat',
-      title: 'Anti-Cheat Mode',
+      title: 'Anti-Cheat Protection',
       icon: <FiLock />,
       color: 'text-rose-400',
       description: 'Keep your quizzes fair and honest.',
       details: [
-        'If enabled, the quiz will auto-submit if a user leaves the tab.',
-        'Users will be blocked from answering more if they try to cheat.',
-        'Works perfectly for school tests or competitive contests.',
+        'Smart Tracking: If someone leaves the tab to search for answers, their quiz ends immediately.',
+        'Instant Submission: Their work is automatically sent "as is" the moment they try to cheat.',
+        'Disqualification: They will see a notification telling them they were auto-submitted.',
+      ]
+    },
+    {
+      id: 'analytics',
+      title: 'Viewing Live Results',
+      icon: <FiTrendingUp />,
+      color: 'text-emerald-400',
+      description: 'Watch the opinions roll in as they happen.',
+      details: [
+        'Live Charts: Watch the bars grow and shrink in real-time as people vote.',
+        'Participant Counter: See how many people are looking at the poll right now.',
+        'Detailed Breakdown: See exactly which options are the most popular.',
       ]
     }
   ];
@@ -93,11 +108,11 @@ const HelpPage = () => {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-sm font-bold mb-6">
           <FiZap className="animate-pulse" /> HELP CENTER
         </div>
-        <h1 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight">
-          Everything you need to <span className="text-cyan-500">get started</span>.
+        <h1 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight text-center">
+          Everything you need to <span className="text-cyan-500">master Votora</span>.
         </h1>
-        <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
-          Votora is a simple tool to help you collect feedback and run fun quizzes in real-time.
+        <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed text-center">
+          Votora is a powerful, real-time polling tool designed to be simple for you and fun for your audience.
         </p>
       </motion.div>
 
@@ -140,34 +155,34 @@ const HelpPage = () => {
           <div className="col-span-1 md:col-span-1">
             <h2 className="text-3xl font-bold text-white mb-6">Why use Votora?</h2>
             <p className="text-gray-400 text-sm leading-relaxed">
-              We made Votora to be fast, safe, and fun. Here is what makes us special:
+              We built Votora to bridge the gap between simple polls and complex live testing.
             </p>
           </div>
           
           <div className="col-span-1 md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-8">
             <div className="flex flex-col gap-4">
               <div className="text-cyan-400 text-xl font-bold flex items-center gap-2">
-                <FiClock /> Super Fast
+                <FiZap /> Real-Time Sync
               </div>
-              <p className="text-gray-500 text-sm">When someone votes, everyone sees the results change instantly. No waiting, no refreshing.</p>
+              <p className="text-gray-500 text-sm">When someone votes, everyone sees the results update instantly. No page refreshing required.</p>
             </div>
             <div className="flex flex-col gap-4">
               <div className="text-emerald-400 text-xl font-bold flex items-center gap-2">
-                <FiLock /> Built-in Safety
+                <FiUserCheck /> Zero Friction
               </div>
-              <p className="text-gray-500 text-sm">We protect your polls from spam and hackers so your data stays clean and honest.</p>
+              <p className="text-gray-500 text-sm">People can vote anonymously without creating an account, unless you are running a secure Quiz.</p>
             </div>
             <div className="flex flex-col gap-4">
               <div className="text-purple-400 text-xl font-bold flex items-center gap-2">
-                <FiTarget /> Choose One
+                <FiTarget /> Cross-Device Experience
               </div>
-              <p className="text-gray-500 text-sm">To keep things simple, users pick exactly one answer for each question. No confusing multiple choices.</p>
+              <p className="text-gray-500 text-sm">Our polls look stunning on phones, tablets, and desktops, making it easy to vote from anywhere.</p>
             </div>
             <div className="flex flex-col gap-4">
               <div className="text-pink-400 text-xl font-bold flex items-center gap-2">
-                <FiLayers /> Big Screen Ready
+                <FiShare2 /> One-Click Share
               </div>
-              <p className="text-gray-500 text-sm">If you are in a meeting, use our "Presentation Mode" to show your results on a large projector or screen.</p>
+              <p className="text-gray-500 text-sm">Copy a short link and share it on social media, in meetings, or via email to start collecting votes.</p>
             </div>
           </div>
         </div>
