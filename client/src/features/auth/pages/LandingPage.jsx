@@ -446,7 +446,7 @@ const LandingPage = () => {
 
               {/* Stats */}
               <div className="stats-row" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-                {[['1M+', 'Votes processed'], ['50K+', 'Live sessions'], ['99.9%', 'Uptime reliability']].map(([val, label], i) => (
+                {[['', 'Votes processsing'], ['', 'Live sessions'], ['', 'Uptime reliability']].map(([val, label], i) => (
                   <div
                     key={label}
                     className="stat-item"
