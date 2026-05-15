@@ -3,6 +3,7 @@ import Analytics from '../models/Analytics.js';
 import generatePollCode from '../utils/generatePollCode.js';
 import ApiError from '../utils/ApiError.js';
 import { POLL_STATUS } from '../constants/index.js';
+import xss from 'xss';
 
 export const createPollService = async (data, userId) => {
   let poll;
@@ -15,7 +16,12 @@ export const createPollService = async (data, userId) => {
   while (attempts < maxAttempts) {
     try {
       const pollCode = generatePollCode();
-      poll = await Poll.create({ ...safeData, createdBy: userId, pollCode });
+      const sanitizedData = {
+        ...safeData,
+        title: xss(safeData.title),
+        description: xss(safeData.description || ''),
+      };
+      poll = await Poll.create({ ...sanitizedData, createdBy: userId, pollCode });
       
       // If save succeeds, break out of retry loop
       break;
@@ -54,7 +60,7 @@ export const getPollByIdService = async (pollId, userId) => {
 };
 
 // Fields a poll owner is allowed to change
-const EDITABLE_FIELDS = ['title', 'description', 'isAnonymous', 'requiresAuth', 'expiresAt', 'questions', 'isQuiz'];
+const EDITABLE_FIELDS = ['title', 'description', 'isAnonymous', 'requiresAuth', 'expiresAt', 'questions', 'isQuiz', 'cheatProtection'];
 
 export const updatePollService = async (pollId, userId, updates) => {
   const poll = await Poll.findById(pollId);
@@ -64,7 +70,13 @@ export const updatePollService = async (pollId, userId, updates) => {
 
   // Only apply whitelisted fields — never let the client overwrite createdBy / pollCode / status
   EDITABLE_FIELDS.forEach((field) => {
-    if (updates[field] !== undefined) poll[field] = updates[field];
+    if (updates[field] !== undefined) {
+      let value = updates[field];
+      if (field === 'title' || field === 'description') {
+        value = xss(value);
+      }
+      poll[field] = value;
+    }
   });
 
   await poll.save();

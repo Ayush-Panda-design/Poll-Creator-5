@@ -5,7 +5,9 @@ export const createPollValidator = [
   body('questions').isArray({ min: 1 }).withMessage('At least one question is required'),
   body('questions.*.question').trim().notEmpty().withMessage('Question text is required'),
   body('questions.*.options').isArray({ min: 2 }).withMessage('Each question needs at least 2 options'),
-  body('expiresAt').optional().isISO8601().withMessage('Invalid expiry date format'),
+  body('expiresAt').optional({ nullable: true }).isISO8601().withMessage('Invalid expiry date format'),
+  body('timeLimitSystem').optional().isIn(['none', 'expiry', 'timer']),
+  body('timerDuration').optional({ nullable: true }).isNumeric(),
 ];
 
 export const updatePollValidator = [

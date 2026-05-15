@@ -4,7 +4,7 @@ import Analytics from '../models/Analytics.js';
 import ApiError from '../utils/ApiError.js';
 import calculateAnalytics from '../utils/calculateAnalytics.js';
 
-export const submitResponseService = async (pollId, answers, userId, ipAddress) => {
+export const submitResponseService = async (pollId, answers, userId, ipAddress, isAutoSubmitted = false) => {
   const poll = await Poll.findById(pollId);
   if (!poll) throw new ApiError(404, 'Poll not found');
 
@@ -31,15 +31,17 @@ export const submitResponseService = async (pollId, answers, userId, ipAddress) 
     if (existingResponse) throw new ApiError(400, 'You have already responded to this poll from this device.');
   }
 
-  // Validate mandatory questions
-  const mandatoryQuestions = poll.questions
-    .map((q, i) => ({ ...q.toObject(), index: i }))
-    .filter((q) => q.required);
+  // Validate mandatory questions (Bypass if auto-submitted)
+  if (!isAutoSubmitted) {
+    const mandatoryQuestions = poll.questions
+      .map((q, i) => ({ ...q.toObject(), index: i }))
+      .filter((q) => q.required);
 
-  for (const mq of mandatoryQuestions) {
-    const answer = answers.find((a) => a.questionIndex === mq.index);
-    if (!answer || !answer.selectedOption) {
-      throw new ApiError(400, `Question "${mq.question}" is mandatory and requires an answer.`);
+    for (const mq of mandatoryQuestions) {
+      const answer = answers.find((a) => a.questionIndex === mq.index);
+      if (!answer || !answer.selectedOption) {
+        throw new ApiError(400, `Question "${mq.question}" is mandatory and requires an answer.`);
+      }
     }
   }
 

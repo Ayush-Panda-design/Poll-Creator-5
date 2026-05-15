@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
-import { FiArrowLeft, FiUsers, FiRefreshCw, FiMonitor, FiShare2, FiDownload } from 'react-icons/fi';
+import { FiArrowLeft, FiUsers, FiRefreshCw, FiMonitor, FiShare2, FiDownload, FiClock } from 'react-icons/fi';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
@@ -22,6 +22,10 @@ const AnalyticsPage = () => {
   const [loading, setLoading]   = useState(true);
   const [participants, setParticipants] = useState(0);
 
+  // Timer states
+  const [activeTimerEnd, setActiveTimerEnd] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(null);
+
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
@@ -31,6 +35,17 @@ const AnalyticsPage = () => {
       ]);
       setData(analyticsRes.data);
       setResponses(responsesRes.data.responses);
+
+      if (analyticsRes.data.poll) {
+        const p = analyticsRes.data.poll;
+        if (p.timeLimitSystem === 'timer' && p.timerEndTime) {
+          const end = new Date(p.timerEndTime);
+          if (end > new Date()) setActiveTimerEnd(end);
+        } else if (p.timeLimitSystem === 'expiry' && p.expiresAt) {
+          const end = new Date(p.expiresAt);
+          if (end > new Date()) setActiveTimerEnd(end);
+        }
+      }
     } catch (err) {
       toast.error('Failed to load analytics');
     } finally {
@@ -80,13 +95,42 @@ const AnalyticsPage = () => {
 
     socket.on(SOCKET_EVENTS.PARTICIPANT_COUNT, ({ count }) => setParticipants(count));
 
+    socket.on(SOCKET_EVENTS.TIMER_STARTED, ({ endTime }) => {
+      const end = new Date(endTime);
+      if (end > new Date()) setActiveTimerEnd(end);
+    });
+
     return () => {
       socket.emit(SOCKET_EVENTS.LEAVE_POLL, id);
       socket.off(SOCKET_EVENTS.ANALYTICS_UPDATE);
       socket.off(SOCKET_EVENTS.NEW_RESPONSE);
       socket.off(SOCKET_EVENTS.PARTICIPANT_COUNT);
+      socket.off(SOCKET_EVENTS.TIMER_STARTED);
     };
   }, [id]);
+
+  useEffect(() => {
+    if (!activeTimerEnd) return;
+    const interval = setInterval(() => {
+      const remaining = Math.floor((activeTimerEnd - new Date()) / 1000);
+      if (remaining <= 0) {
+        clearInterval(interval);
+        setTimeLeft(null);
+        setActiveTimerEnd(null);
+      } else {
+        setTimeLeft(remaining);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [activeTimerEnd]);
+
+  const startTimer = () => {
+    const socket = getSocket();
+    if (socket) {
+      socket.emit(SOCKET_EVENTS.START_TIMER, { pollId: id });
+      toast.success('Timer started!');
+    }
+  };
 
   if (loading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
   if (!data)   return <div className="text-center py-20 text-gray-400">No analytics data available.</div>;
@@ -107,6 +151,17 @@ const AnalyticsPage = () => {
           </div>
         </div>
         <div className="flex gap-2 flex-wrap w-full md:w-auto">
+          {timeLeft !== null && (
+            <div className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl font-mono font-bold text-[13px] animate-pulse">
+              ⏱ {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+            </div>
+          )}
+          {!timeLeft && poll?.timeLimitSystem === 'timer' && (
+            <button onClick={startTimer} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20 transition font-medium text-[13px] z-50">
+              <FiClock /> Start Timer
+            </button>
+          )}
+
           <button onClick={fetchAnalytics} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1a1a1a] border border-white/[0.06] text-[#a3a3a3] hover:text-white hover:bg-white/5 transition font-medium text-[13px] flex-1 md:flex-none justify-center">
             <FiRefreshCw /> Refresh
           </button>

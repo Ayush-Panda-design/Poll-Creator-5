@@ -11,7 +11,8 @@ export const submitResponse = asyncHandler(async (req, res) => {
     req.params.pollId,
     answers,
     userId,
-    ipAddress
+    ipAddress,
+    req.body.isAutoSubmitted
   );
 
   // Emit real-time update

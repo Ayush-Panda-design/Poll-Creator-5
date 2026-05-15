@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 /**
- * Calculates analytics for a given poll from its responses.
+ * Calculates analytics for a given poll from its responses using MongoDB Aggregation.
  * Returns total responses and per-question option vote counts.
- * @param {string} pollId - The poll's MongoDB ID
+ * @param {string|mongoose.Types.ObjectId} pollId - The poll's MongoDB ID
  * @returns {Object} Analytics object { totalResponses, questionStats }
  */
 const calculateAnalytics = async (pollId) => {
@@ -13,31 +13,63 @@ const calculateAnalytics = async (pollId) => {
   const poll = await Poll.findById(pollId);
   if (!poll) return null;
 
-  const responses = await Response.find({ pollId });
+  const objectId = new mongoose.Types.ObjectId(pollId);
 
-  const totalResponses = responses.length;
+  // 1. Get total responses extremely fast using countDocuments
+  const totalResponses = await Response.countDocuments({ pollId: objectId });
 
-  // Build per-question stats
+  // 2. Use Aggregation Pipeline to offload calculation to the database
+  const aggResult = await Response.aggregate([
+    { $match: { pollId: objectId } },
+    { $unwind: '$answers' },
+    { $match: { 'answers.selectedOption': { $ne: null } } },
+    {
+      $group: {
+        _id: {
+          questionIndex: '$answers.questionIndex',
+          selectedOption: '$answers.selectedOption',
+        },
+        count: { $sum: 1 },
+      },
+    },
+    {
+      $group: {
+        _id: '$_id.questionIndex',
+        options: {
+          $push: {
+            option: '$_id.selectedOption',
+            count: '$count',
+          },
+        },
+      },
+    },
+  ]);
+
+  // Convert aggregation result to a map for O(1) lookups
+  const aggMap = {};
+  aggResult.forEach((item) => {
+    aggMap[item._id] = item;
+  });
+
+  // 3. Build per-question stats by merging poll schema with aggregation data
   const questionStats = poll.questions.map((question, qIndex) => {
+    const aggData = aggMap[qIndex] || { options: [] };
+
     const optionCounts = {};
     question.options.forEach((opt) => {
       optionCounts[opt] = 0;
     });
 
-    responses.forEach((response) => {
-      const answer = response.answers.find(
-        (a) => a.questionIndex === qIndex
-      );
-      if (answer && answer.selectedOption) {
-        optionCounts[answer.selectedOption] =
-          (optionCounts[answer.selectedOption] || 0) + 1;
+    let totalForQuestion = 0;
+
+    // Populate actual counts from aggregation
+    aggData.options.forEach((optData) => {
+      // Only count if the option still exists in the poll schema
+      if (optionCounts[optData.option] !== undefined) {
+        optionCounts[optData.option] = optData.count;
+        totalForQuestion += optData.count;
       }
     });
-
-    const totalForQuestion = Object.values(optionCounts).reduce(
-      (sum, count) => sum + count,
-      0
-    );
 
     // Compute percentages
     const optionPercentages = {};

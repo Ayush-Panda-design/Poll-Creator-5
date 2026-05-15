@@ -24,6 +24,12 @@ const PublicPollPage = () => {
   const [expired, setExpired] = useState(false);
   const [error, setError] = useState('');
   const [participants, setParticipants] = useState(0);
+  const [isCheatSubmitted, setIsCheatSubmitted] = useState(false);
+
+  // Timer States
+  const [activeTimerEnd, setActiveTimerEnd] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [autoSubmitTriggered, setAutoSubmitTriggered] = useState(false);
 
   useEffect(() => {
     const fetchPoll = async () => {
@@ -35,9 +41,19 @@ const PublicPollPage = () => {
           return;
         }
         setPoll(p);
+        if (p.timeLimitSystem === 'timer' && p.timerEndTime) {
+          const end = new Date(p.timerEndTime);
+          if (end > new Date()) setActiveTimerEnd(end);
+        } else if (p.timeLimitSystem === 'expiry' && p.expiresAt) {
+          const end = new Date(p.expiresAt);
+          if (end > new Date()) setActiveTimerEnd(end);
+        }
       } catch (err) {
         if (err.response?.status === 410) setExpired(true);
-        else setError(err.response?.data?.message || 'Poll not found');
+        else {
+          console.error('Poll fetch error:', err);
+          setError(err.response?.data?.message || 'Poll not found');
+        }
       } finally {
         setLoading(false);
       }
@@ -56,16 +72,95 @@ const PublicPollPage = () => {
     );
 
     socket.on(SOCKET_EVENTS.POLL_EXPIRED, () => setExpired(true));
+    
+    socket.on(SOCKET_EVENTS.TIMER_STARTED, ({ endTime }) => {
+      const end = new Date(endTime);
+      if (end > new Date()) setActiveTimerEnd(end);
+    });
 
     return () => {
       socket.emit(SOCKET_EVENTS.LEAVE_POLL, poll._id);
       socket.off(SOCKET_EVENTS.PARTICIPANT_COUNT);
       socket.off(SOCKET_EVENTS.POLL_EXPIRED);
+      socket.off(SOCKET_EVENTS.TIMER_STARTED);
     };
   }, [poll]);
 
+  // Handle countdown and auto-submit on expiry
+  useEffect(() => {
+    if (!activeTimerEnd) return;
+    const interval = setInterval(() => {
+      const remaining = Math.floor((activeTimerEnd - new Date()) / 1000);
+      if (remaining <= 0) {
+        clearInterval(interval);
+        setTimeLeft(null);
+        setActiveTimerEnd(null);
+        handleAutoSubmit(false);
+      } else {
+        setTimeLeft(remaining);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [activeTimerEnd]);
+
+  // Anti-cheat logic: auto-submit if tab is changed or window loses focus
+  useEffect(() => {
+    if (!poll || !poll.cheatProtection || submitted || submitting) return;
+
+    const triggerCheatSubmit = () => {
+      if (!submitted && !submitting) {
+        setIsCheatSubmitted(true);
+        handleAutoSubmit(true);
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') triggerCheatSubmit();
+    };
+
+    const handleBlur = () => triggerCheatSubmit();
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleBlur);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleBlur);
+    };
+  }, [poll, submitted, submitting, answers]);
+
   const handleSelect = (qIdx, option) =>
     setAnswers((a) => ({ ...a, [qIdx]: option }));
+
+  const generatePayload = () => {
+    return poll.questions.map((_, qIdx) => ({
+      questionIndex: qIdx,
+      selectedOption: answers[qIdx] || null,
+    }));
+  };
+
+  const handleAutoSubmit = async (isCheat = false) => {
+    if (autoSubmitTriggered) return;
+    setAutoSubmitTriggered(true);
+
+    const payload = generatePayload();
+    try {
+      setSubmitting(true);
+      const res = await api.post(`/responses/${poll._id}`, { answers: payload, isAutoSubmitted: true });
+      if (res.data.quizResults) setQuizResults(res.data.quizResults);
+      setSubmitted(true);
+      
+      if (isCheat) {
+        toast.error('Quiz auto-submitted because you left the page!', { duration: 6000 });
+      } else {
+        toast.error("Time's up! Your response was auto-submitted.", { duration: 6000 });
+      }
+    } catch (err) {
+      console.error('Auto-submit failed', err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const handleSubmit = async () => {
     const missing = poll.questions
@@ -77,10 +172,7 @@ const PublicPollPage = () => {
       return;
     }
 
-    const payload = poll.questions.map((_, qIdx) => ({
-      questionIndex: qIdx,
-      selectedOption: answers[qIdx] || null,
-    }));
+    const payload = generatePayload();
 
     try {
       setSubmitting(true);
@@ -160,10 +252,16 @@ const PublicPollPage = () => {
       return (
         <div className="min-h-screen bg-surface flex items-center justify-center p-6">
           <div className="card text-center max-w-md w-full">
-            <div className="text-5xl mb-6">🏆</div>
-            <h2 className="text-3xl font-bold text-white mb-2">Quiz Completed!</h2>
-            <p className="text-gray-400 mb-8">You've successfully submitted your responses.</p>
-            
+            <div className="text-5xl mb-6">{isCheatSubmitted ? '🚫' : '🏆'}</div>
+            <h2 className="text-3xl font-bold text-white mb-2">
+              {isCheatSubmitted ? 'Auto-Submitted' : 'Quiz Completed!'}
+            </h2>
+            <p className="text-gray-400 mb-8">
+              {isCheatSubmitted
+                ? 'You were disqualified from continuing because you left the page.'
+                : 'You\'ve successfully submitted your responses.'}
+            </p>
+
             <div className="bg-[#0f0f0f] rounded-2xl p-8 border border-white/[0.06] mb-8">
               <p className="text-sm text-gray-500 uppercase tracking-widest font-bold mb-1">Your Score</p>
               <h3 className="text-6xl font-black text-cyan-400">
@@ -213,18 +311,25 @@ const PublicPollPage = () => {
       <header className="border-b border-surface-border py-4 px-6 relative z-10">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <Logo />
-          {participants > 0 && (
-            <span className="text-xs text-cyan-400 flex items-center gap-2">
-              <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
-              {participants} viewing
-            </span>
-          )}
+          <div className="flex items-center gap-4">
+            {timeLeft !== null && (
+              <div className="flex items-center gap-2 px-4 py-1.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl font-mono font-bold text-sm animate-pulse">
+                ⏱ {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+              </div>
+            )}
+            {participants > 0 && (
+              <span className="text-xs text-cyan-400 flex items-center gap-2">
+                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
+                {participants} viewing
+              </span>
+            )}
+          </div>
         </div>
       </header>
 
       <main className="max-w-2xl mx-auto px-6 py-12 relative z-10">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          
+
           {/* Title */}
           <div className="text-center mb-10">
             <h1 className="text-3xl font-bold text-white mb-2">
@@ -266,18 +371,16 @@ const PublicPollPage = () => {
                     <button
                       key={oIdx}
                       onClick={() => handleSelect(qIdx, option)}
-                      className={`w-full text-left px-4 py-3 rounded-xl border transition-all flex items-center gap-3 group ${
-                        answers[qIdx] === option
+                      className={`w-full text-left px-4 py-3 rounded-xl border transition-all flex items-center gap-3 group ${answers[qIdx] === option
                           ? 'border-cyan-500/50 bg-cyan-500/10 text-white'
                           : 'border-white/10 text-gray-400 hover:bg-white/5 hover:text-gray-200'
-                      }`}
+                        }`}
                     >
                       <span
-                        className={`w-4 h-4 rounded-full border flex-shrink-0 transition-all ${
-                          answers[qIdx] === option
+                        className={`w-4 h-4 rounded-full border flex-shrink-0 transition-all ${answers[qIdx] === option
                             ? 'bg-cyan-500 border-cyan-500 scale-110 shadow-[0_0_10px_rgba(6,182,212,0.4)]'
                             : 'border-gray-500'
-                        }`}
+                          }`}
                       />
                       {option}
                     </button>

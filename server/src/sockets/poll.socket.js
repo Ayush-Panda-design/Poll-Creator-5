@@ -40,4 +40,20 @@ export const registerPollSocketHandlers = (io, socket) => {
       }
     });
   });
+
+  // Handle starting a manual timer
+  socket.on(SOCKET_EVENTS.START_TIMER, async ({ pollId }) => {
+    try {
+      // Import Poll model dynamically to avoid circular dependencies if any, or just import at top.
+      const Poll = (await import('../models/Poll.js')).default;
+      const poll = await Poll.findById(pollId);
+      if (poll && poll.timeLimitSystem === 'timer' && poll.timerDuration) {
+        poll.timerEndTime = new Date(Date.now() + poll.timerDuration * 60 * 1000);
+        await poll.save();
+        io.to(`poll:${pollId}`).emit(SOCKET_EVENTS.TIMER_STARTED, { endTime: poll.timerEndTime });
+      }
+    } catch (err) {
+      console.error('Error starting timer:', err);
+    }
+  });
 };

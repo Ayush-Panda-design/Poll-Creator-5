@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   FiPlus, FiTrash2, FiArrowLeft, FiCheckCircle,
   FiShield, FiClock, FiUsers, FiZap, FiInfo,
-  FiChevronRight,
+  FiChevronRight, FiLock
 } from 'react-icons/fi';
 import { HiOutlineSparkles } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
@@ -156,7 +156,10 @@ const CreatePollPage = () => {
     isAnonymous: true,
     requiresAuth: false,
     isQuiz: false,
+    cheatProtection: false,
+    timeLimitSystem: 'none', // 'none', 'expiry', 'timer'
     expiresAt: '',
+    timerDuration: '',
     questions: [emptyQuestion()],
   });
 
@@ -187,7 +190,8 @@ const CreatePollPage = () => {
 
     const payload = {
       ...form,
-      expiresAt: form.expiresAt ? new Date(form.expiresAt).toISOString() : null,
+      expiresAt: form.timeLimitSystem === 'expiry' && form.expiresAt ? new Date(form.expiresAt).toISOString() : null,
+      timerDuration: form.timeLimitSystem === 'timer' && form.timerDuration ? Number(form.timerDuration) : null,
       questions: form.questions.map(q => ({ ...q, options: q.options.filter(Boolean) }))
     };
 
@@ -272,17 +276,63 @@ const CreatePollPage = () => {
                   />
                 </Field>
 
-                <Field label="Expiry Date & Time" hint="Leave blank for no expiry">
-                  <div className="relative">
-                    <FiClock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 text-[13px] pointer-events-none" />
-                    <input
-                      type="datetime-local"
-                      value={form.expiresAt}
-                      onChange={(e) => updateForm('expiresAt', e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#0a0a0a] border border-white/5 focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 outline-none text-[14px] text-gray-400 transition-all [color-scheme:dark]"
-                    />
-                  </div>
-                </Field>
+                <div className="space-y-4">
+                  <Field label="Time Limit System" hint="Choose how to restrict voting time">
+                    <div className="grid grid-cols-3 gap-2">
+                      {['none', 'expiry', 'timer'].map(sys => (
+                        <button
+                          key={sys}
+                          type="button"
+                          onClick={() => updateForm('timeLimitSystem', sys)}
+                          className={`py-2 px-3 rounded-xl border text-[13px] font-medium transition-all ${
+                            form.timeLimitSystem === sys
+                              ? 'border-cyan-500/50 bg-cyan-500/10 text-cyan-400'
+                              : 'border-white/5 bg-[#1a1a1a] text-gray-500 hover:bg-white/5'
+                          }`}
+                        >
+                          {sys === 'none' ? 'None' : sys === 'expiry' ? 'Auto Expiry' : 'Manual Timer'}
+                        </button>
+                      ))}
+                    </div>
+                  </Field>
+
+                  <AnimatePresence>
+                    {form.timeLimitSystem === 'expiry' && (
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                        <Field label="Expiry Date & Time" hint="Poll will auto-close at this time">
+                          <div className="relative">
+                            <FiClock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 text-[13px] pointer-events-none" />
+                            <input
+                              type="datetime-local"
+                              value={form.expiresAt}
+                              onChange={(e) => updateForm('expiresAt', e.target.value)}
+                              className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#0a0a0a] border border-white/5 focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 outline-none text-[14px] text-gray-400 transition-all [color-scheme:dark]"
+                            />
+                          </div>
+                        </Field>
+                      </motion.div>
+                    )}
+
+                    {form.timeLimitSystem === 'timer' && (
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                        <Field label="Timer Duration (Minutes)" hint="You will start this timer from the Analytics page">
+                          <div className="relative">
+                            <FiClock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 text-[13px] pointer-events-none" />
+                            <input
+                              type="number"
+                              min="1"
+                              max="1440"
+                              value={form.timerDuration}
+                              onChange={(e) => updateForm('timerDuration', e.target.value)}
+                              placeholder="e.g. 10"
+                              className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#0a0a0a] border border-white/5 focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 outline-none text-[14px] text-gray-200 placeholder:text-gray-700 transition-all"
+                            />
+                          </div>
+                        </Field>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </SectionCard>
 
@@ -381,7 +431,28 @@ const CreatePollPage = () => {
             <SectionCard title="Settings">
               <div className="space-y-3">
                 <Toggle label="Anonymous" desc="Identity hidden" value={form.isAnonymous} onClick={() => updateForm('isAnonymous', !form.isAnonymous)} icon={FiUsers} />
-                <Toggle label="Quiz Mode" desc="Correct answers" value={form.isQuiz} onClick={() => updateForm('isQuiz', !form.isQuiz)} icon={FiCheckCircle} />
+                <Toggle label="Quiz Mode" desc="Correct answers" value={form.isQuiz} onClick={() => {
+                  updateForm('isQuiz', !form.isQuiz);
+                  if (form.isQuiz) updateForm('cheatProtection', false);
+                }} icon={FiCheckCircle} />
+                <AnimatePresence>
+                  {form.isQuiz && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <Toggle 
+                        label="Anti-Cheat" 
+                        desc="Auto-submit on tab leave" 
+                        value={form.cheatProtection} 
+                        onClick={() => updateForm('cheatProtection', !form.cheatProtection)} 
+                        icon={FiLock} 
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
                 <Toggle label="Restrict" desc="Login required" value={form.requiresAuth} onClick={() => updateForm('requiresAuth', !form.requiresAuth)} icon={FiShield} />
               </div>
             </SectionCard>

@@ -51,7 +51,7 @@ const CenteredToast = ({ t, message, type = 'success' }) => {
           onClick={handleDismiss}
           className="w-full py-4 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white font-black text-[13px] uppercase tracking-widest transition-all active:scale-[0.98] shadow-[0_8px_20px_rgba(6,182,212,0.3)]"
         >
-          Understood
+          OK
         </button>
       </motion.div>
     </div>

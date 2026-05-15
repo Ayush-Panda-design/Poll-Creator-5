@@ -96,25 +96,29 @@ const SignupPage = () => {
           </div>
 
           {/* GOOGLE */}
-          <div className="flex justify-center mb-6">
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={() => toast.error('Google Auth Failed')}
-              theme="filled_black"
-              shape="pill"
-              text="signup_with"
-              width="100%"
-            />
-          </div>
+          {import.meta.env.VITE_GOOGLE_CLIENT_ID && import.meta.env.VITE_GOOGLE_CLIENT_ID !== 'your_google_client_id_here' && (
+            <>
+              <div className="flex justify-center mb-6">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => toast.error('Google Auth Failed')}
+                  theme="filled_black"
+                  shape="pill"
+                  text="signup_with"
+                  width="340"
+                />
+              </div>
 
-          {/* DIVIDER */}
-          <div className="flex items-center gap-3 my-6">
-            <div className="flex-1 h-px bg-white/[0.08]" />
-            <span className="text-[11px] text-[#555] uppercase tracking-wider">
-              or continue with email
-            </span>
-            <div className="flex-1 h-px bg-white/[0.08]" />
-          </div>
+              {/* DIVIDER */}
+              <div className="flex items-center gap-3 my-6">
+                <div className="flex-1 h-px bg-white/[0.08]" />
+                <span className="text-[11px] text-[#555] uppercase tracking-wider">
+                  or continue with email
+                </span>
+                <div className="flex-1 h-px bg-white/[0.08]" />
+              </div>
+            </>
+          )}
 
           {/* FORM */}
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -29,6 +29,9 @@ import PresentationPage from '../features/presentation/pages/PresentationPage';
 import PublicPollPage    from '../features/publicPoll/pages/PublicPollPage';
 import PublicResultsPage from '../features/publicPoll/pages/PublicResultsPage';
 
+// Help
+import HelpPage from '../features/help/pages/HelpPage';
+
 // Landing
 import LandingPage from '../features/auth/pages/LandingPage';
 
@@ -58,6 +61,7 @@ const AppRoutes = () => (
         <Route path="/polls/:id"              element={<PollDetailPage />} />
         <Route path="/polls/:id/analytics"   element={<AnalyticsPage />} />
         <Route path="/polls/:id/present"     element={<PresentationPage />} />
+        <Route path="/help"                  element={<HelpPage />} />
       </Route>
     </Route>
 

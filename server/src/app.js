@@ -9,14 +9,24 @@ import pollRoutes from './routes/poll.routes.js';
 import responseRoutes from './routes/response.routes.js';
 import analyticsRoutes from './routes/analytics.routes.js';
 import errorMiddleware from './middleware/error.middleware.js';
+import { apiLimiter, authLimiter } from './middleware/rateLimit.middleware.js';
 
 const app = express();
 
-// ── Middleware ───────────────────────────────────────────────────────────────
+// ── CORS (Must be first) ─────────────────────────────────────────────────────
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true,
 }));
+
+// ── Rate Limiting ────────────────────────────────────────────────────────────
+// Apply general limiter to all /api routes
+app.use('/api', apiLimiter);
+
+// Apply stricter limiter to auth routes
+app.use('/api/auth', authLimiter);
+
+// ── Middleware ───────────────────────────────────────────────────────────────
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

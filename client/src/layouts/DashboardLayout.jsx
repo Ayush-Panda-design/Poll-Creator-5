@@ -9,12 +9,14 @@ import {
   FiUser,
   FiLogOut,
   FiMenu,
-  FiX
+  FiX,
+  FiBook
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import Logo from '../components/ui/Logo';
 
 const navLinks = [
+  { to: '/help', icon: <FiBook />, label: 'Help & Documentation' },
   { to: '/dashboard', icon: <FiHome />, label: 'Home' },
   { to: '/polls/create', icon: <FiPlus />, label: 'Create' },
   { to: '/profile', icon: <FiUser />, label: 'Profile' },
@@ -91,7 +93,7 @@ const DashboardLayout = () => {
         <div className="border-t border-white/5 p-4">
           <div
             onClick={() => { navigate('/profile'); closeMobileMenu(); }}
-            className="flex items-center gap-3 cursor-pointer hover:opacity-80 p-2 rounded-xl transition-all"
+            className="flex items-center gap-3 cursor-pointer hover:opacity-80 p-2 rounded-xl transition-all shadow-lg shadow-black/20 mb-2"
           >
             <div className="w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-sm font-semibold text-cyan-400 shrink-0">
               {user?.name?.[0]?.toUpperCase()}
@@ -103,8 +105,16 @@ const DashboardLayout = () => {
           </div>
 
           <button
+            onClick={() => { navigate('/help'); closeMobileMenu(); }}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-semibold text-gray-400 bg-white/5 hover:bg-white/10 border border-white/5 transition-all mb-2"
+          >
+            <FiBook size={14} />
+            <span>View Documentation</span>
+          </button>
+
+          <button
             onClick={handleLogout}
-            className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-semibold text-red-400 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 transition-all"
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-semibold text-red-400 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 transition-all"
           >
             <FiLogOut size={14} />
             <span>Sign out</span>

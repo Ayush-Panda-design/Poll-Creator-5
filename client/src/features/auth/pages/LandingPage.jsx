@@ -167,7 +167,7 @@ const LandingPage = () => {
       {/* NAVBAR */}
       <header
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
-            ? 'bg-[#121212]/90 backdrop-blur-xl border-b border-white/[0.05]'
+            ? 'bg-[#121212]/90 backdrop-blur-xl border-b border-[#333333]'
             : 'bg-transparent'
           }`}
       >
@@ -218,7 +218,7 @@ const LandingPage = () => {
               transition={{ duration: 0.7 }}
             >
               {/* badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.06] bg-[#1a1a1a] text-[12px] text-[#7b7b7b] mb-8 font-medium">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#333333] bg-[#1a1a1a] text-[12px] text-[#7b7b7b] mb-8 font-medium">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Modern realtime polling platform
               </div>
@@ -251,7 +251,7 @@ const LandingPage = () => {
 
                 <Link
                   to="/login"
-                  className="px-6 py-3 rounded-xl border border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] transition-colors text-[14px] text-[#d0d0d0]"
+                  className="px-6 py-3 rounded-xl border border-[#333333] bg-[#1a1a1a] hover:bg-[#222] transition-colors text-[14px] text-[#d0d0d0]"
                 >
                   Sign In
                 </Link>
@@ -275,7 +275,7 @@ const LandingPage = () => {
               </div>
             </motion.div>
 
-            {/* RIGHT */}
+            {/* RIGHT - MOBILE DISPLAY WITH GLASSMORPHISM */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
@@ -289,23 +289,26 @@ const LandingPage = () => {
                   duration: 5,
                   ease: 'easeInOut',
                 }}
-                className="relative w-[320px] rounded-[42px] border border-white/[0.06] bg-[#151515] overflow-hidden"
+                className="relative w-[320px] rounded-[42px] border-[1.5px] border-[#444444] bg-[#151515] overflow-hidden backdrop-blur-2xl"
                 style={{
                   boxShadow:
-                    '0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03)',
+                    '0 40px 100px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.05)',
                 }}
               >
-                {/* top */}
-                <div className="flex justify-center pt-4 pb-2">
-                  <div className="w-20 h-[3px] rounded-full bg-white/[0.08]" />
+                {/* GLASSMORPHIC BORDER OVERLAY (Top Right Focus) */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.03] blur-3xl rounded-full -translate-y-1/2 translate-x-1/2" />
+                
+                {/* top speaker/notch area */}
+                <div className="flex justify-center pt-4 pb-2 relative z-10">
+                  <div className="w-20 h-[4px] rounded-full bg-[#333333] border border-white/[0.05]" />
                 </div>
 
                 {/* content */}
-                <div className="px-5 pb-8 pt-3">
+                <div className="px-5 pb-8 pt-3 relative z-10">
                   {/* head */}
                   <div className="flex items-start justify-between mb-6">
                     <div>
-                      <p className="text-[10px] text-[#444] uppercase tracking-widest font-medium mb-1">
+                      <p className="text-[10px] text-[#555] uppercase tracking-widest font-medium mb-1">
                         Live Poll
                       </p>
 
@@ -314,7 +317,7 @@ const LandingPage = () => {
                       </h2>
                     </div>
 
-                    <div className="w-9 h-9 rounded-xl bg-[#1a1a1a] border border-white/[0.06] flex items-center justify-center">
+                    <div className="w-9 h-9 rounded-xl bg-white/[0.03] border border-[#444444] backdrop-blur-md flex items-center justify-center shadow-lg">
                       <HiOutlineChartBar className="text-[#3b82f6] text-[14px]" />
                     </div>
                   </div>
@@ -328,7 +331,7 @@ const LandingPage = () => {
                         <motion.div
                           key={option.name}
                           layout
-                          className="rounded-xl border border-white/[0.05] bg-[#1a1a1a] p-3.5"
+                          className="rounded-xl border border-[#333333] bg-white/[0.02] p-3.5 backdrop-blur-sm"
                         >
                           <div className="flex items-center justify-between mb-2">
                             <p
@@ -356,7 +359,7 @@ const LandingPage = () => {
                               style={{
                                 background: isTop
                                   ? 'linear-gradient(90deg,#2563eb,#3b82f6)'
-                                  : 'rgba(255,255,255,0.1)',
+                                  : 'rgba(255,255,255,0.08)',
                               }}
                             />
                           </div>
@@ -365,11 +368,11 @@ const LandingPage = () => {
                     })}
                   </div>
 
-                  {/* badge */}
-                  <div className="mt-5 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-white/[0.05] bg-[#1a1a1a]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  {/* live badge with glass look */}
+                  <div className="mt-5 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-[#333333] bg-white/[0.02] backdrop-blur-md">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.4)]" />
 
-                    <span className="text-[10px] text-[#444] font-medium">
+                    <span className="text-[10px] text-[#666] font-medium">
                       Results updating live
                     </span>
                   </div>
@@ -385,7 +388,7 @@ const LandingPage = () => {
         id="features"
         className="relative max-w-7xl mx-auto px-6 md:px-8 py-28"
       >
-        <div className="w-full h-px bg-white/[0.05] mb-24" />
+        <div className="w-full h-px bg-[#333333] mb-24" />
 
         <div className="text-center mb-16">
           <h2 className="text-[36px] md:text-[46px] font-bold tracking-[-0.03em] text-[#f5f5f5] mb-4">
@@ -398,7 +401,7 @@ const LandingPage = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.05] rounded-2xl overflow-hidden border border-white/[0.05]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-[#333333] rounded-2xl overflow-hidden border border-[#333333]">
           {features.map((f, i) => (
             <motion.div
               key={f.title}
@@ -408,7 +411,7 @@ const LandingPage = () => {
               viewport={{ once: true }}
               className="bg-[#151515] p-7 hover:bg-[#1a1a1a] transition-colors group"
             >
-              <div className="w-11 h-11 rounded-xl bg-[#1a1a1a] border border-white/[0.07] flex items-center justify-center text-[#3b82f6] text-[15px] mb-5">
+              <div className="w-11 h-11 rounded-xl bg-[#1a1a1a] border border-[#333333] flex items-center justify-center text-[#3b82f6] text-[15px] mb-5">
                 {f.icon}
               </div>
 
@@ -458,7 +461,7 @@ const LandingPage = () => {
               viewport={{ once: true }}
               className="group"
             >
-              <div className="relative overflow-hidden rounded-[28px] border border-white/[0.05] bg-[#1a1a1a]">
+              <div className="relative overflow-hidden rounded-[28px] border border-[#333333] bg-[#1a1a1a]">
                 <img
                   src={item.img}
                   alt={item.title}
@@ -515,9 +518,9 @@ const LandingPage = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.08 }}
                 viewport={{ once: true }}
-                className="rounded-2xl border border-white/[0.05] bg-[#151515] p-6 flex gap-4 hover:bg-[#1a1a1a] transition-colors"
+                className="rounded-2xl border border-[#333333] bg-[#151515] p-6 flex gap-4 hover:bg-[#1a1a1a] transition-colors"
               >
-                <div className="min-w-[42px] h-[42px] rounded-xl bg-[#1a1a1a] border border-white/[0.07] flex items-center justify-center text-[#3b82f6] text-[14px] mt-0.5">
+                <div className="min-w-[42px] h-[42px] rounded-xl bg-[#1a1a1a] border border-[#333333] flex items-center justify-center text-[#3b82f6] text-[14px] mt-0.5">
                   {f.icon}
                 </div>
 
@@ -543,7 +546,7 @@ const LandingPage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.08 }}
                 viewport={{ once: true }}
-                className="rounded-2xl border border-white/[0.05] bg-[#151515] p-7"
+                className="rounded-2xl border border-[#333333] bg-[#151515] p-7"
               >
                 <div className="flex items-center gap-0.5 text-[#3b82f6] mb-5">
                   {[...Array(5)].map((_, j) => (
@@ -572,7 +575,7 @@ const LandingPage = () => {
 
       {/* CTA */}
       <section className="max-w-6xl mx-auto px-6 md:px-8 pb-28">
-        <div className="relative rounded-[32px] border border-white/[0.06] bg-[#151515] px-10 py-20 overflow-hidden text-center">
+        <div className="relative rounded-[32px] border border-[#333333] bg-[#151515] px-10 py-20 overflow-hidden text-center">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-44 h-px bg-gradient-to-r from-transparent via-[#3b82f6]/40 to-transparent" />
 
           <h2 className="text-[38px] md:text-[52px] font-bold tracking-[-0.04em] text-[#f5f5f5] mb-5">
@@ -596,10 +599,10 @@ const LandingPage = () => {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-white/[0.05]">
+      <footer className="border-t border-[#333333]">
         <div className="max-w-6xl mx-auto px-6 py-7 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="relative w-5 h-5 rounded-md bg-[#1a1a1a] border border-white/[0.08] flex items-center justify-center">
+            <div className="relative w-5 h-5 rounded-md bg-[#1a1a1a] border border-[#333333] flex items-center justify-center">
               <span className="text-[9px] font-black text-[#f5f5f5]">V</span>
 
               <div className="absolute bottom-0.5 right-0.5 w-1 h-1 rounded-full bg-gradient-to-br from-[#3b82f6] to-[#06b6d4]" />

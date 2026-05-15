@@ -6,6 +6,8 @@ export const SOCKET_EVENTS = {
   PARTICIPANT_COUNT:'participant_count',
   POLL_EXPIRED:     'poll_expired',
   POLL_PUBLISHED:   'poll_published',
+  START_TIMER:      'start_timer',
+  TIMER_STARTED:    'timer_started',
 };
 
 export const POLL_STATUS = {

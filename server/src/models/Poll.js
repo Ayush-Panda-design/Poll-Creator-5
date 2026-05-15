@@ -19,9 +19,13 @@ const pollSchema = new mongoose.Schema(
     description: { type: String, trim: true, maxlength: 1000 },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     isQuiz: { type: Boolean, default: false }, // If true, it acts as a quiz
+    cheatProtection: { type: Boolean, default: false }, // If true, auto-submits if user leaves tab
     isAnonymous: { type: Boolean, default: true },
     requiresAuth: { type: Boolean, default: false },
+    timeLimitSystem: { type: String, enum: ['none', 'expiry', 'timer'], default: 'none' },
+    timerDuration: { type: Number, default: null }, // in minutes
     expiresAt: { type: Date, default: null },
+    timerEndTime: { type: Date, default: null }, // for manual timer
     isPublished: { type: Boolean, default: false },
     pollCode: { type: String, required: true, unique: true, uppercase: true },
     status: { type: String, enum: Object.values(POLL_STATUS), default: POLL_STATUS.ACTIVE },
